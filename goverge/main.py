@@ -36,7 +36,9 @@ def goverge(options):
     project_root = os.getcwd()
 
     output, _ = Popen(
-        ["go", "list"], stdout=PIPE, cwd=project_root
+        ["go", "list", "-f" "'{{.ImportComment}}'"],
+        stdout=PIPE,
+        cwd=project_root
     ).communicate()
 
     project_package = output.split("]")[0].split("[")[-1]
