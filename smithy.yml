@@ -1,0 +1,10 @@
+project: python
+
+requirements:
+  - requirements_dev.txt
+
+script:
+  - nosetests
+
+test_reports:
+  - ./nosetests.xml

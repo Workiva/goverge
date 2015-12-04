@@ -1,0 +1,71 @@
+import glob
+import time
+
+def get_coverage_reports(report_loc):
+    """
+    Gets all reports in a given location
+
+    :type report_loc: string
+    :param report_loc: The location of the reports
+    :rtype: list
+    :return: A list of reports in the given location
+    """
+
+    return [report for report in glob.glob(u"{0}/*.txt".format(report_loc))]
+
+
+def compile_reports(reports):
+    """ Compiles multiple coverage reports into a single report.
+
+    :type reports: list
+    :param reports: Reports that will be compiled into a single report.
+    """
+
+    # This is dict of [Coverage location] [Coverage report line]
+    package_reports = {}
+
+    for report in reports:
+        time_at_beginning = time.clock()
+        with open(report) as report_file:
+            for line in report_file.readlines():
+                line_parts = line.split(" ")
+
+                # If we get a blank line or a mode line just ignore them
+                if line == "mode: set\n" or line == "":
+                    continue
+
+                # Check if the line is already in the master list
+                master_line = package_reports.get(line_parts[0])
+                if master_line:
+                    # If the new value is 0 we don't need to update the value
+                    if int(line_parts[2]) == 0:
+                        continue
+
+                    # If master value is already 1 we don't need to update it
+                    if int(master_line.split(" ")[2]) == 1:
+                        continue
+
+                    # Replace the line in the master list with the new line
+                    package_reports[line_parts[0]] = line
+
+                # If the line isn't already in the master list just append it
+                else:
+                    package_reports[line_parts[0]] = line
+
+            print "{0} was processed in: {1} seconds".format(
+                report, time.clock() - time_at_beginning)
+
+    write_coverage_to_file(package_reports.values())
+
+
+def write_coverage_to_file(coverage_reports):
+    """
+    Write the coverage report lines to the coverage file.
+
+    :type coverage_reports: list
+    :param coverage_reports: Coverage report lines
+    """
+
+    with open("test_coverage.txt", "w") as coverage_file:
+        coverage_file.write("mode: set\n")
+        coverage_file.write("".join(coverage_reports))
