@@ -36,12 +36,12 @@ def goverge(options):
     project_root = os.getcwd()
 
     output, _ = Popen(
-        ["go", "list", "-f" "'{{.ImportComment}}'"],
+        ["go", "list", "-f", "'{{.ImportComment}}'"],
         stdout=PIPE,
         cwd=project_root
     ).communicate()
 
-    project_package = output.split("]")[0].split("[")[-1]
+    project_package = output.replace("'", "")
 
     if options.test_path:
         sub_dirs = options.test_path
