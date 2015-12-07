@@ -1,9 +1,6 @@
 import subprocess
 import threading
 
-from utils import get_package_deps
-
-
 def generate_coverage(packages, project_package, project_root, godep, short):
     """ Generate the coverage for a list of packages.
 
@@ -73,3 +70,26 @@ def generate_package_coverage(
     # Generate the coverage report for each of the package dependencies
 
     subprocess.call(options, cwd=test_path)
+
+
+def get_package_deps(project_package, test_path):
+    """ Gets the packages dependencies that are part of the project.
+
+    :type project_package: string
+    :param project_package: The base package of the project
+    :type test_path: string
+    :param test_path: The path of the package that is under test
+    :rtype: list
+    :return: Project dependencies
+    """
+    output, _ = subprocess.Popen(["go", "list", "-f", "'{{.Deps}}'"],
+                      stdout=subprocess.PIPE, cwd=test_path).communicate()
+
+    package_deps = [
+        package.replace("]", "").replace("[", "")
+        for package in output.split()
+        if project_package.split("\n")[0] in package]
+
+    package_deps.append(".")
+
+    return package_deps

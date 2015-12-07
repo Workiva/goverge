@@ -1,5 +1,10 @@
+import mock
+from mock import mock_open
+from mock import patch
+import io
 import os
 import shutil
+import StringIO
 import unittest
 
 from goverge.reports import compile_reports
@@ -53,15 +58,18 @@ class TestCompileReports(unittest.TestCase):
 
 class TestWriteCoverage(unittest.TestCase):
 
-    def tearDown(self):
-        os.remove("test_coverage.txt")
-
     def test_write_coverage_to_file(self):
-        coverage_reports = ["foo\n", "bar\n", "baz\n"]
+        with mock.patch('goverge.reports.open', create=True) as mock_open:
+            stream = io.BytesIO()
+            # patching to make getvalue() work after close() or __exit__()
+            stream.close = mock.Mock(return_value=None)
+            mock_open.return_value = stream
 
-        write_coverage_to_file(coverage_reports)
+            coverage_reports = ["foo\n", "bar\n", "baz\n"]
 
-        with open("test_coverage.txt", "r") as coverage_file:
-            self.assertEquals(
-                coverage_file.readlines(),
-                ['mode: set\n', 'foo\n', 'bar\n', 'baz\n'])
+            write_coverage_to_file(coverage_reports)
+
+            mock_open.assert_called_once_with('test_coverage.txt', 'w')
+
+            contents = stream.getvalue()
+            self.assertEquals(contents, 'mode: set\nfoo\nbar\nbaz\n')

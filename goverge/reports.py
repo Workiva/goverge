@@ -1,6 +1,6 @@
 import glob
+import logging
 import time
-
 
 def get_coverage_reports(report_loc):
     """
@@ -25,15 +25,18 @@ def compile_reports(reports):
     # This is dict of [Coverage location] [Coverage report line]
     package_reports = {}
 
+    time_at_beginning = time.clock()
     for report in reports:
-        time_at_beginning = time.clock()
+        report_start_time = time.clock()
         with open(report) as report_file:
             for line in report_file.readlines():
-                line_parts = line.split(" ")
-
                 # If we get a blank line or a mode line just ignore them
                 if line == "mode: set\n" or line == "":
                     continue
+
+                line_parts = line.split(" ")
+                if len(line_parts) != 3:
+                    logging.error(u"Invalid report line: {}".format(line))
 
                 # Check if the line is already in the master list
                 master_line = package_reports.get(line_parts[0])
@@ -54,8 +57,9 @@ def compile_reports(reports):
                     package_reports[line_parts[0]] = line
 
             print "{0} was processed in: {1} seconds".format(
-                report, time.clock() - time_at_beginning)
-
+                report, time.clock() - report_start_time)
+    print "Time to process all reports: {0}".format(
+                time.clock() - time_at_beginning)
     write_coverage_to_file(package_reports.values())
 
 
