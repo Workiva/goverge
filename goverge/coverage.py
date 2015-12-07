@@ -1,6 +1,7 @@
 import subprocess
 import threading
 
+
 def generate_coverage(packages, project_package, project_root, godep, short):
     """ Generate the coverage for a list of packages.
 
@@ -82,8 +83,9 @@ def get_package_deps(project_package, test_path):
     :rtype: list
     :return: Project dependencies
     """
-    output, _ = subprocess.Popen(["go", "list", "-f", "'{{.Deps}}'"],
-                      stdout=subprocess.PIPE, cwd=test_path).communicate()
+    output, _ = subprocess.Popen(
+        ["go", "list", "-f", "'{{.Deps}}'"],
+        stdout=subprocess.PIPE, cwd=test_path).communicate()
 
     package_deps = [
         package.replace("]", "").replace("[", "")

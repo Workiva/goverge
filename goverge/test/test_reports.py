@@ -1,10 +1,7 @@
-import mock
-from mock import mock_open
-from mock import patch
 import io
+import mock
 import os
 import shutil
-import StringIO
 import unittest
 
 from goverge.reports import compile_reports

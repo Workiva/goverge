@@ -2,6 +2,7 @@ import glob
 import logging
 import time
 
+
 def get_coverage_reports(report_loc):
     """
     Gets all reports in a given location
@@ -59,7 +60,7 @@ def compile_reports(reports):
             print "{0} was processed in: {1} seconds".format(
                 report, time.clock() - report_start_time)
     print "Time to process all reports: {0}".format(
-                time.clock() - time_at_beginning)
+        time.clock() - time_at_beginning)
     write_coverage_to_file(package_reports.values())
 
 
