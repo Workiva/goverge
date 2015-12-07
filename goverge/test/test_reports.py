@@ -5,8 +5,6 @@ from goverge.reports import write_coverage_to_file
 
 
 class TestWriteCoverage(unittest.TestCase):
-    def setUp(self):
-        open("test_coverage.txt", "w").close()
 
     def tearDown(self):
         os.remove("test_coverage.txt")

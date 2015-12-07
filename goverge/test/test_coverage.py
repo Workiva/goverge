@@ -19,12 +19,13 @@ class TestCoverage(unittest.TestCase):
         mock_deps.assert_called_once_with("project_package", "test_path")
 
         mock_subprocess.call.assert_called_once_with([
-            "godep", "go", "test", "-short", '-covermode=set',
+            "godep", "go", "test", '-covermode=set',
             u"-coverprofile=project_root/reports/test_package.txt",
-            u"-coverpkg=foo/bar,foo/bar/baz,."
+            u"-coverpkg=foo/bar,foo/bar/baz,.", "-short"
         ], cwd="test_path")
 
-    def test_generate_coverage_no_godep_short(self, mock_subprocess, mock_deps):
+    def test_generate_coverage_no_godep_short(
+            self, mock_subprocess, mock_deps):
         mock_deps.return_value = ["foo/bar", "foo/bar/baz", "."]
 
         generate_package_coverage(

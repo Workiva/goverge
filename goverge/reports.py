@@ -1,6 +1,7 @@
 import glob
 import time
 
+
 def get_coverage_reports(report_loc):
     """
     Gets all reports in a given location

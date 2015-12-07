@@ -1,12 +1,13 @@
 """goverge PyPI Package."""
 
+import imp
 import os
-from setuptools import find_packages, setup
+from setuptools import find_packages
+from setuptools import setup
 
 
 def get_version():
-    import imp
-
+    """Get the version of the project."""
     with open('goverge/_pkg_meta.py', 'rb') as fp:
         mod = imp.load_source('_pkg_meta', 'biloba', fp)
 

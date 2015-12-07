@@ -5,7 +5,7 @@ from utils import get_package_deps
 
 
 def generate_coverage(packages, project_package, project_root, godep, short):
-    """ Generate the coverage for a list of
+    """ Generate the coverage for a list of packages.
 
     :type package: list
     :param package: Packages to generate coverage for
@@ -38,6 +38,7 @@ def generate_coverage(packages, project_package, project_root, godep, short):
     for thread in threads:
         thread.join()
 
+
 def generate_package_coverage(
         test_path, project_package, test_package, project_root, godep, short):
     """ Generates the coverage report for a package.
@@ -58,16 +59,17 @@ def generate_package_coverage(
     package_deps = get_package_deps(project_package, test_path)
 
     options = [
-        "godep", "go", "test", '-covermode=set',
+        "go", "test", '-covermode=set',
         u"-coverprofile={0}/reports/{1}.txt".format(
             project_root, test_package),
         u"-coverpkg={0}".format(",".join(package_deps))]
 
-    if short:
-        options.insert(3, "-short")
+    if godep:
+        options = ["godep"] + options
 
-    if not godep:
-        options.pop(0)
+    if short:
+        options.append("-short")
 
     # Generate the coverage report for each of the package dependencies
+
     subprocess.call(options, cwd=test_path)

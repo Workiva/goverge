@@ -17,7 +17,8 @@ def get_package_deps(project_package, test_path):
 
     package_deps = [
         package.split("]")[0].split("[")[-1]
-        for package in output.split() if project_package.split("\n")[0] in package]
+        for package in output.split()
+        if project_package.split("\n")[0] in package]
 
     package_deps.append(".")
 
