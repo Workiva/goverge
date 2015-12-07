@@ -4,6 +4,7 @@ requirements:
   - requirements_dev.txt
 
 script:
+  - flake8
   - nosetests
 
 test_reports:

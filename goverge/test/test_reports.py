@@ -43,10 +43,11 @@ class TestCompileReports(unittest.TestCase):
             "foo/bar/foo.go:23.85,25.8 1 1\n",
             "foo/bar/bar.go:1.85,4.2 1 0\n",
             "foo/bar/bar.go:7.85,12.8 1 1\n"
-                 ]
+            ]
         with open("test_coverage.txt", "r") as coverage_file:
             for line in coverage_file.readlines():
                 self.assertIn(line, lines)
+
 
 class TestWriteCoverage(unittest.TestCase):
 
