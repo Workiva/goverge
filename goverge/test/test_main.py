@@ -25,6 +25,3 @@ class parse_argsTestCase(TestCase):
             'test_path': ['/foo/bar', '/bar/foo']
         }
         self.assertEquals(expected, vars(args))
-
-class goverge_executeTestCase(TestCase):
-    
