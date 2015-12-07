@@ -16,7 +16,7 @@ def get_package_deps(project_package, test_path):
                       stdout=PIPE, cwd=test_path).communicate()
 
     package_deps = [
-        package.split("]")[0].split("[")[-1]
+        package.replace("]", "").replace("[", "")
         for package in output.split()
         if project_package.split("\n")[0] in package]
 
