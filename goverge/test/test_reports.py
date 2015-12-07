@@ -19,6 +19,7 @@ class TestCompileReports(unittest.TestCase):
             coverage_report.write("foo/bar/foo.go:23.85,25.8 1 0\n")
             coverage_report.write("foo/bar/bar.go:1.85,4.2 1 0\n")
             coverage_report.write("foo/bar/bar.go:7.85,12.8 1 1\n")
+            coverage_report.write("")
 
         with open("./reports/coverage_bar.txt", "w") as coverage_report:
             coverage_report.write("mode: set\n")
@@ -26,6 +27,7 @@ class TestCompileReports(unittest.TestCase):
             coverage_report.write("foo/bar/foo.go:23.85,25.8 1 1\n")
             coverage_report.write("foo/bar/bar.go:1.85,4.2 1 0\n")
             coverage_report.write("foo/bar/bar.go:7.85,12.8 1 0\n")
+            coverage_report.write("")
 
     def tearDown(self):
         os.remove("./reports/coverage_foo.txt")
