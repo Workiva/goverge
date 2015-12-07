@@ -1,11 +1,17 @@
 project: python
 
+env:
+  - CODECOV_TOKEN='bQ4MgjJ0G2Y73v8JNX6L7yMK9679nbYB'
+
 requirements:
   - requirements_dev.txt
 
 script:
   - flake8
   - nosetests
+
+after_script:
+  - ./codecov.sh
 
 test_reports:
   - ./nosetests.xml
