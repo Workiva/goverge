@@ -34,12 +34,13 @@ def goverge(options):
     os.mkdir("./reports")
 
     project_root = os.getcwd()
-
-    output, _ = Popen(
-        ["go", "list", "-f", "'{{.ImportComment}}'"],
-        stdout=PIPE,
-        cwd=project_root
-    ).communicate()
+    output = options.project_import
+    if not output:
+        output, _ = Popen(
+            ["go", "list"],
+            stdout=PIPE,
+            cwd=project_root
+        ).communicate()
 
     project_package = output.replace("'", "")
 
@@ -89,5 +90,15 @@ def _parse_args(argv):
             'Path(s) to a specific package to get the coverage on\n'
             'Example: --test_path path/one --test_path path/two'
         ))
+    p.add_argument(
+        '--project_import',
+        action='store',
+        help=(
+            "The import path of the project. leaving this blank will get the "
+            "project name Using go list but in some cases that doesn't work "
+            "and needs to be manually entered. "
+            "example: github.com/Workiva/goverge"
+        )
+    )
 
     return p.parse_args(argv)
