@@ -63,5 +63,3 @@ class parse_argsTestCase(TestCase):
             'test_path': None
         }
         self.assertEquals(expected, vars(args))
-
-
