@@ -1,6 +1,4 @@
-import multiprocessing
-import os
-from Queue import Queue
+import glob
 import subprocess
 import threading
 
@@ -20,12 +18,16 @@ def generate_coverage(packages, project_package, project_root, godep, short):
     :param short: If coverage should run with the short flag
     """
 
-    num_processes = 15
+    num_processes = 20
     threads = []
     while threads or packages:
 
         if len(threads) < num_processes and packages:
             package = packages.pop()
+            if not [
+                report for report in glob.glob(
+                    u"{0}/*test.go".format(package))]:
+                continue
             t = threading.Thread(target=generate_package_coverage, args=(
                 package,
                 project_package,
