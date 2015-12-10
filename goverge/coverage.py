@@ -1,3 +1,6 @@
+import multiprocessing
+import os
+from Queue import Queue
 import subprocess
 import threading
 
@@ -17,24 +20,28 @@ def generate_coverage(packages, project_package, project_root, godep, short):
     :param short: If coverage should run with the short flag
     """
 
+    num_processes = 4
     threads = []
-    for package in packages:
-        t = threading.Thread(
-            target=generate_package_coverage,
-            args=(
+    while threads or packages:
+
+        if len(threads) < num_processes and packages:
+            package = packages.pop()
+            t = threading.Thread(target=generate_package_coverage, args=(
                 package,
                 project_package,
                 package.replace("/", "_").replace(".", ""),
                 project_root,
                 godep,
                 short
-            )
-        )
-        threads.append(t)
-        t.start()
+            ))
+            t.setDaemon(True)
+            t.start()
+            threads.append(t)
 
-    for thread in threads:
-        thread.join()
+        else:
+            for thread in threads:
+                if not thread.isAlive():
+                    threads.remove(thread)
 
 
 def generate_package_coverage(

@@ -58,6 +58,13 @@ def goverge(options):
 
     compile_reports(reports)
 
+    if options.html:
+        Popen(
+            ["go", "tool", "cover", "--html=test_coverage.txt"],
+            stdout=PIPE,
+            cwd=project_root
+        ).communicate()
+
 
 def _parse_args(argv):
     """
@@ -76,12 +83,23 @@ def _parse_args(argv):
         default=False,
         help=(
             'Run coverage using the projects godep files.'))
+
+    p.add_argument(
+        '--html',
+        action='store_true',
+        default=False,
+        help=(
+            "View a html report of the coverage file that is generated."
+        )
+    )
+
     p.add_argument(
         '--short',
         action='store_true',
         default=False,
         help=(
             'Run coverage using the -short flag'))
+
     p.add_argument(
         '--test_path',
         default=None,
@@ -90,6 +108,7 @@ def _parse_args(argv):
             'Path(s) to a specific package to get the coverage on\n'
             'Example: --test_path path/one --test_path path/two'
         ))
+
     p.add_argument(
         '--project_import',
         action='store',
