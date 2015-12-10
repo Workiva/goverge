@@ -20,7 +20,7 @@ def generate_coverage(packages, project_package, project_root, godep, short):
     :param short: If coverage should run with the short flag
     """
 
-    num_processes = 8
+    num_processes = 15
     threads = []
     while threads or packages:
 
