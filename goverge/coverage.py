@@ -41,9 +41,7 @@ def generate_coverage(packages, project_package, project_root, godep, short):
             threads.append(t)
 
         else:
-            for thread in threads:
-                if not thread.is_alive():
-                    threads.remove(thread)
+            threads = [thread for thread in threads if thread.is_alive()]
 
 
 def generate_package_coverage(
