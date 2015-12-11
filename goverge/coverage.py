@@ -18,15 +18,15 @@ def generate_coverage(packages, project_package, project_root, godep, short):
     :param short: If coverage should run with the short flag
     """
 
-    num_processes = 20
+    max_threads = 20
     threads = []
     while threads or packages:
 
-        if len(threads) < num_processes and packages:
+        if len(threads) < max_threads and packages:
             package = packages.pop()
             if not [
                 report for report in glob.glob(
-                    u"{0}/*test.go".format(package))]:
+                    u"{0}/*_test.go".format(package))]:
                 continue
             t = threading.Thread(target=generate_package_coverage, args=(
                 package,
@@ -36,13 +36,13 @@ def generate_coverage(packages, project_package, project_root, godep, short):
                 godep,
                 short
             ))
-            t.setDaemon(True)
+            t.daemon = True
             t.start()
             threads.append(t)
 
         else:
             for thread in threads:
-                if not thread.isAlive():
+                if not thread.is_alive():
                     threads.remove(thread)
 
 
