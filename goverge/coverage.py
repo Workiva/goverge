@@ -24,10 +24,11 @@ def generate_coverage(packages, project_package, project_root, godep, short):
 
         if len(threads) < max_threads and packages:
             package = packages.pop()
-            if not [
-                report for report in glob.glob(
-                    u"{0}/*_test.go".format(package))]:
+
+            # If there isn't a test file in the package we skip it.
+            if not glob.glob(u"{0}/*_test.go".format(package)):
                 continue
+
             t = threading.Thread(target=generate_package_coverage, args=(
                 package,
                 project_package,
