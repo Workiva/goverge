@@ -1,3 +1,4 @@
+import glob
 import subprocess
 import threading
 
@@ -17,24 +18,31 @@ def generate_coverage(packages, project_package, project_root, godep, short):
     :param short: If coverage should run with the short flag
     """
 
+    max_threads = 20
     threads = []
-    for package in packages:
-        t = threading.Thread(
-            target=generate_package_coverage,
-            args=(
+    while threads or packages:
+
+        if len(threads) < max_threads and packages:
+            package = packages.pop()
+
+            # If there isn't a test file in the package we skip it.
+            if not glob.glob(u"{0}/*_test.go".format(package)):
+                continue
+
+            t = threading.Thread(target=generate_package_coverage, args=(
                 package,
                 project_package,
                 package.replace("/", "_").replace(".", ""),
                 project_root,
                 godep,
                 short
-            )
-        )
-        threads.append(t)
-        t.start()
+            ))
+            t.daemon = True
+            t.start()
+            threads.append(t)
 
-    for thread in threads:
-        thread.join()
+        else:
+            threads = [thread for thread in threads if thread.is_alive()]
 
 
 def generate_package_coverage(
