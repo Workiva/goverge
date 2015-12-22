@@ -31,15 +31,17 @@ class MainTestCase(TestCase):
         self.assertEquals(package, "foo/bar")
 
 
-@patch('goverge.main.Popen', return_value=Popen)
+@patch('goverge.main.Popen')
+@patch('goverge.main.Popen.communicate')
 @patch('goverge.main.generate_coverage')
 @patch('goverge.main.os.getcwd', return_value="/foo/bar")
 @patch('goverge.main.os.mkdir')
 class GovergeTestCase(TestCase):
 
     def test_short_race_godep_path_html(
-            self, mock_mkdir, mock_cwd, gen_cov, mock_popen):
+            self, mock_mkdir, mock_cwd, gen_cov, mock_comm, mock_popen):
 
+        mock_popen.return_value = Popen
         args = main._parse_args([
             '--godep', '--short', '--race', '--test_path=/foo/bar',
             "--project_import='github.com/Workiva/goverge'", '--html'])
@@ -50,6 +52,7 @@ class GovergeTestCase(TestCase):
         gen_cov.assert_called_once_with(
             ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
             False, 'xml_reports/', True)
+        assert mock_comm.called
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
             stdout=PIPE, cwd="/foo/bar")
