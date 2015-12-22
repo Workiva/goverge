@@ -12,7 +12,6 @@ class TestCheckFailed(unittest.TestCase):
         self.assertRaises(SystemExit, check_failed, [1])
 
 
-
 @patch('goverge.coverage.get_package_deps')
 class TestCoverage(unittest.TestCase):
 
@@ -67,7 +66,7 @@ class TestCoverage(unittest.TestCase):
                 u"-coverpkg=foo/bar,foo/bar/baz,."
             ],
             "test_path"
-         )
+        )
 
 
 class TestPackageDeps(unittest.TestCase):

@@ -55,7 +55,6 @@ class GovergeTestCase(TestCase):
             stdout=PIPE, cwd="/foo/bar")
 
 
-
 class parse_argsTestCase(TestCase):
     def test_godep(self):
         args = main._parse_args(['--godep'])
@@ -173,4 +172,3 @@ class parse_argsTestCase(TestCase):
             'xml_dir': 'xml_reports/'
         }
         self.assertEquals(expected, vars(args))
-
