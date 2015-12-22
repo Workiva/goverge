@@ -1,5 +1,6 @@
 goverge
 ========
+[![codecov.io](https://codecov.workiva.net/github/Workiva/goverge/coverage.svg?token=KOdniuD3F1&branch=master)](https://codecov.workiva.net/github/Workiva/goverge?branch=master)
 goverge is a golang multi package coverage reporting tool.
 
 Install
