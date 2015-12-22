@@ -75,4 +75,4 @@ def write_coverage_to_file(coverage_reports):
     with open("test_coverage.txt", "w") as coverage_file:
         coverage_file.write("mode: set\n")
         coverage_file.write("".join(coverage_reports))
-    print "Report file created: test_coverage.txt"
+    print "Coverage file created: test_coverage.txt"

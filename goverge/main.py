@@ -12,8 +12,41 @@ from reports import compile_reports
 from reports import get_coverage_reports
 
 
+def delete_folder(folder):
+    """Delete a folder using the given path, ignoring OSErrors"""
+    try:
+        shutil.rmtree(folder)
+    except OSError:
+        return
+
+
+def get_project_package(project_root, project_import):
+    """
+    Get the project package from either the import passed in or the project
+    root using go list
+
+    :type project_root: string
+    :param project_root: The location of the project root
+    :type project_import: string
+    :param project_import: The import path for the project root
+    :rtype: string
+    :return: The project package import path
+    """
+    if not project_import:
+
+        project_import, _ = Popen(
+            ["go", "list"],
+            stdout=PIPE,
+            cwd=project_root
+        ).communicate()
+    return project_import.replace("'", "")
+
+
 def main():
     """Main entry point into goverge."""
+
+    os.environ["GORACE"] = "halt_on_error=1"
+
     args = _parse_args(sys.argv[1:])
 
     goverge(args)
@@ -26,23 +59,18 @@ def goverge(options):
     :param options: Command-line arguments to control Goverge
     """
 
-    try:
-        shutil.rmtree('reports')
-    except OSError:
-        pass
-
+    delete_folder("reports")
     os.mkdir("./reports")
 
-    project_root = os.getcwd()
-    output = options.project_import
-    if not output:
-        output, _ = Popen(
-            ["go", "list"],
-            stdout=PIPE,
-            cwd=project_root
-        ).communicate()
+    if options.xml:
+        try:
+            os.mkdir(options.xml_dir)
+        except OSError:
+            pass
 
-    project_package = output.replace("'", "")
+    project_root = os.getcwd()
+
+    project_package = get_project_package(project_root, options.project_import)
 
     if options.test_path:
         sub_dirs = options.test_path
@@ -52,7 +80,8 @@ def goverge(options):
                     if "/." not in x[0] and "Godeps" not in x[0]]
 
     generate_coverage(
-        sub_dirs, project_package, project_root, options.godep, options.short)
+        sub_dirs, project_package, project_root, options.godep, options.short,
+        options.xml, options.xml_dir, options.race)
 
     reports = get_coverage_reports("./reports")
 
@@ -94,11 +123,22 @@ def _parse_args(argv):
     )
 
     p.add_argument(
+        '--race',
+        action='store_true',
+        default=False,
+        help=(
+            "Run tests using the -race flag"
+        )
+    )
+
+    p.add_argument(
         '--short',
         action='store_true',
         default=False,
         help=(
-            'Run coverage using the -short flag'))
+            'Run coverage using the -short flag'
+        )
+    )
 
     p.add_argument(
         '--test_path',
@@ -107,7 +147,8 @@ def _parse_args(argv):
         help=(
             'Path(s) to a specific package to get the coverage on\n'
             'Example: --test_path path/one --test_path path/two'
-        ))
+        )
+    )
 
     p.add_argument(
         '--project_import',
@@ -117,6 +158,25 @@ def _parse_args(argv):
             "project name Using go list but in some cases that doesn't work "
             "and needs to be manually entered. "
             "example: github.com/Workiva/goverge"
+        )
+    )
+
+    p.add_argument(
+        '--xml',
+        action='store_true',
+        default=False,
+        help=(
+            "Generate xml reports of test runs, assumes that go2xunit is "
+            "installed"
+        )
+    )
+
+    p.add_argument(
+        '--xml_dir',
+        action='store',
+        default="xml_reports/",
+        help=(
+            "The location to put the xml reports that are generated."
         )
     )
 

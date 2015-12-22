@@ -1,9 +1,22 @@
 import glob
+import os
 import subprocess
+import sys
 import threading
 
 
-def generate_coverage(packages, project_package, project_root, godep, short):
+def check_failed(return_code):
+    """Check if the test run failed and exit with the correct code if it did.
+    :type return_code: int
+    :param return_code: The return code of a test run
+    """
+    if return_code != 0:
+        exit(return_code)
+
+
+def generate_coverage(
+        packages, project_package, project_root, godep, short, xml, xml_dir,
+        race):
     """ Generate the coverage for a list of packages.
 
     :type package: list
@@ -16,6 +29,12 @@ def generate_coverage(packages, project_package, project_root, godep, short):
     :param godep: If coverage should run with godep
     :type short: bool
     :param short: If coverage should run with the short flag
+    :type xml: bool
+    :param xml: If xml test output should be created
+    :type xml_dir: string
+    :param xml_dir: The location that the xml reports should be made
+    :type race: bool
+    :param race: If the race flag should be used or not
     """
 
     max_threads = 20
@@ -35,7 +54,10 @@ def generate_coverage(packages, project_package, project_root, godep, short):
                 package.replace("/", "_").replace(".", ""),
                 project_root,
                 godep,
-                short
+                short,
+                xml,
+                xml_dir,
+                race
             ))
             t.daemon = True
             t.start()
@@ -46,7 +68,8 @@ def generate_coverage(packages, project_package, project_root, godep, short):
 
 
 def generate_package_coverage(
-        test_path, project_package, test_package, project_root, godep, short):
+        test_path, project_package, test_package, project_root, godep, short,
+        xml, xml_dir, race):
     """ Generates the coverage report for a package.
 
     :type test_path: string
@@ -59,13 +82,19 @@ def generate_package_coverage(
     :param project_root: The project root path
     :type godep: bool
     :param godep: If godep should be used when running tests
+    :type xml: bool
+    :param xml: If xml test output should be created
+    :type xml_dir: string
+    :param xml_dir: The location that the xml reports should be made
+    :type race: bool
+    :param race: If the race flag should be used or not
     """
 
     # Get the dependencies of the package we are testing
     package_deps = get_package_deps(project_package, test_path)
 
     options = [
-        "go", "test", '-covermode=set',
+        "go", "test", "-v", '-covermode=set',
         u"-coverprofile={0}/reports/{1}.txt".format(
             project_root, test_package),
         u"-coverpkg={0}".format(",".join(package_deps))]
@@ -76,9 +105,43 @@ def generate_package_coverage(
     if short:
         options.append("-short")
 
-    # Generate the coverage report for each of the package dependencies
+    if race:
+        options.append("-race")
 
-    subprocess.call(options, cwd=test_path)
+    if xml:
+        return generate_xml(xml_dir + test_package, options, test_path)
+
+    # Generate the coverage report for each of the package dependencies
+    check_failed(subprocess.call(options, cwd=test_path))
+
+
+def generate_xml(output_loc, options, test_path):
+    """
+    Run tests and generate a xml report
+
+    :type output_loc: string
+    :param output_loc: The location that the ouput file will be created
+    :type options: list
+    :param options: The command line options to run the tests with
+    :type test_path: string
+    :param test_path: Path that is being tested
+    """
+
+    output_file = output_loc + ".out"
+
+    with open(output_file, "w") as out_file:
+        p = subprocess.Popen(
+            options, cwd=test_path, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+        for line in p.stdout:
+            sys.stdout.write(line)
+            out_file.write(line)
+        p.communicate()
+    subprocess.call([
+        "go2xunit", "-input", output_file, "-output",
+        output_loc + ".xml"])
+    os.remove(output_file)
+    check_failed(p.returncode)
 
 
 def get_package_deps(project_package, test_path):

@@ -1,6 +1,59 @@
+from mock import patch
+import os
+from subprocess import PIPE
+from subprocess import Popen
+import sys
 from unittest import TestCase
 
 from goverge import main
+
+
+class MainTestCase(TestCase):
+
+    @patch('goverge.main.goverge')
+    def test_main(self, mock_goverge):
+        sys.argv = ["goverge", "--godep"]
+        main.main()
+        mock_goverge.assert_called_once_with(main._parse_args(['--godep']))
+        self.assertEquals(os.environ.get("GORACE"), "halt_on_error=1")
+
+    @patch('goverge.main.shutil.rmtree')
+    def test_delete_folder(self, mock_rmtree):
+        main.delete_folder("foo/")
+        mock_rmtree.assert_called_once_with("foo/")
+
+    @patch('goverge.main.Popen')
+    @patch('goverge.main.Popen.communicate')
+    def test_get_project_package(self, mock_comm, mock_popen):
+        mock_popen.return_value = Popen
+        mock_comm.return_value = "'foo/bar'", ""
+        package = main.get_project_package("/test/foo/bar", "")
+        self.assertEquals(package, "foo/bar")
+
+
+@patch('goverge.main.Popen', return_value=Popen)
+@patch('goverge.main.generate_coverage')
+@patch('goverge.main.os.getcwd', return_value="/foo/bar")
+@patch('goverge.main.os.mkdir')
+class GovergeTestCase(TestCase):
+
+    def test_short_race_godep_path_html(
+            self, mock_mkdir, mock_cwd, gen_cov, mock_popen):
+
+        args = main._parse_args([
+            '--godep', '--short', '--race', '--test_path=/foo/bar',
+            "--project_import='github.com/Workiva/goverge'", '--html'])
+        main.goverge(args)
+
+        mock_mkdir.assert_called_once_with("./reports")
+        assert mock_cwd.called
+        gen_cov.assert_called_once_with(
+            ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
+            False, 'xml_reports/', True)
+        mock_popen.assert_called_once_with(
+            ["go", "tool", "cover", "--html=test_coverage.txt"],
+            stdout=PIPE, cwd="/foo/bar")
+
 
 
 class parse_argsTestCase(TestCase):
@@ -10,8 +63,11 @@ class parse_argsTestCase(TestCase):
             'godep': True,
             'html': False,
             'project_import': None,
+            "race": False,
             'short': False,
-            'test_path': None
+            'test_path': None,
+            'xml': False,
+            'xml_dir': 'xml_reports/'
         }
         self.assertEqual(expected, vars(args))
 
@@ -21,8 +77,11 @@ class parse_argsTestCase(TestCase):
             'godep': False,
             'html': True,
             'project_import': None,
+            "race": False,
             'short': False,
-            'test_path': None
+            'test_path': None,
+            'xml': False,
+            'xml_dir': 'xml_reports/'
         }
         self.assertEquals(expected, vars(args))
 
@@ -32,8 +91,11 @@ class parse_argsTestCase(TestCase):
             'godep': False,
             'html': False,
             'project_import': None,
+            "race": False,
             'short': True,
-            'test_path': None
+            'test_path': None,
+            'xml': False,
+            'xml_dir': 'xml_reports/'
         }
         self.assertEqual(expected, vars(args))
 
@@ -46,8 +108,11 @@ class parse_argsTestCase(TestCase):
             'godep': False,
             'html': False,
             'project_import': None,
+            "race": False,
             'short': False,
-            'test_path': ['/foo/bar', '/bar/foo']
+            'test_path': ['/foo/bar', '/bar/foo'],
+            'xml': False,
+            'xml_dir': 'xml_reports/'
         }
         self.assertEquals(expected, vars(args))
 
@@ -59,7 +124,53 @@ class parse_argsTestCase(TestCase):
             'godep': False,
             'html': False,
             'project_import': "github.com/Workiva/goverge",
+            "race": False,
             'short': False,
-            'test_path': None
+            'test_path': None,
+            'xml': False,
+            'xml_dir': 'xml_reports/'
         }
         self.assertEquals(expected, vars(args))
+
+    def test_xml(self):
+        args = main._parse_args(["--xml"])
+        expected = {
+            'godep': False,
+            'html': False,
+            'project_import': None,
+            "race": False,
+            'short': False,
+            'test_path': None,
+            'xml': True,
+            'xml_dir': 'xml_reports/'
+        }
+        self.assertEquals(expected, vars(args))
+
+    def test_xml_dir(self):
+        args = main._parse_args(["--xml_dir=/foo/bar/"])
+        expected = {
+            'godep': False,
+            'html': False,
+            'project_import': None,
+            "race": False,
+            'short': False,
+            'test_path': None,
+            'xml': False,
+            'xml_dir': '/foo/bar/'
+        }
+        self.assertEquals(expected, vars(args))
+
+    def test_race(self):
+        args = main._parse_args(["--race"])
+        expected = {
+            'godep': False,
+            'html': False,
+            'project_import': None,
+            "race": True,
+            'short': False,
+            'test_path': None,
+            'xml': False,
+            'xml_dir': 'xml_reports/'
+        }
+        self.assertEquals(expected, vars(args))
+
