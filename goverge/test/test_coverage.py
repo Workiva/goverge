@@ -8,8 +8,11 @@ from goverge.coverage import get_package_deps
 
 
 class TestCheckFailed(unittest.TestCase):
-    def test_check_failed(self):
-        self.assertRaises(SystemExit, check_failed, [1])
+
+    @patch('goverge.coverage.os._exit')
+    def test_check_failed(self, mock_exit):
+        check_failed(1)
+        mock_exit.assert_called_with(1)
 
 
 @patch('goverge.coverage.get_package_deps')
