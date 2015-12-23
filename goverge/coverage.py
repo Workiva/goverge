@@ -11,7 +11,7 @@ def check_failed(return_code):
     :param return_code: The return code of a test run
     """
     if return_code != 0:
-        exit(return_code)
+        os._exit(return_code)
 
 
 def generate_coverage(
