@@ -7,7 +7,7 @@ script:
 - flake8
 - nosetests
 after_script:
-- ./codecov.sh
+- codecov -u https://codecov.io --no-fail
 deploy:
   provider: pypi
   user: wesleybalvanz-wf
