@@ -67,7 +67,7 @@ class GovergeTestCase(TestCase):
         assert mock_cwd.called
         gen_cov.assert_called_once_with(
             ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
-            False, 'xml_reports/', True)
+            False, 'xml_reports/', True, None)
         assert mock_comm.called
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
@@ -83,6 +83,7 @@ class parse_argsTestCase(TestCase):
             'project_import': None,
             "race": False,
             'short': False,
+            'tag': None,
             'test_path': None,
             'xml': False,
             'xml_dir': 'xml_reports/'
@@ -97,6 +98,7 @@ class parse_argsTestCase(TestCase):
             'project_import': None,
             "race": False,
             'short': False,
+            'tag': None,
             'test_path': None,
             'xml': False,
             'xml_dir': 'xml_reports/'
@@ -111,11 +113,27 @@ class parse_argsTestCase(TestCase):
             'project_import': None,
             "race": False,
             'short': True,
+            'tag': None,
             'test_path': None,
             'xml': False,
             'xml_dir': 'xml_reports/'
         }
         self.assertEqual(expected, vars(args))
+
+    def test_tag(self):
+        args = main._parse_args(["--tag=foo"])
+        expected = {
+            'godep': False,
+            'html': False,
+            'project_import': None,
+            "race": False,
+            'short': False,
+            'tag': "foo",
+            'test_path': None,
+            'xml': False,
+            'xml_dir': 'xml_reports/'
+        }
+        self.assertEquals(expected, vars(args))
 
     def test_path(self):
         args = main._parse_args([
@@ -128,6 +146,7 @@ class parse_argsTestCase(TestCase):
             'project_import': None,
             "race": False,
             'short': False,
+            'tag': None,
             'test_path': ['/foo/bar', '/bar/foo'],
             'xml': False,
             'xml_dir': 'xml_reports/'
@@ -144,6 +163,7 @@ class parse_argsTestCase(TestCase):
             'project_import': "github.com/Workiva/goverge",
             "race": False,
             'short': False,
+            'tag': None,
             'test_path': None,
             'xml': False,
             'xml_dir': 'xml_reports/'
@@ -158,6 +178,7 @@ class parse_argsTestCase(TestCase):
             'project_import': None,
             "race": False,
             'short': False,
+            'tag': None,
             'test_path': None,
             'xml': True,
             'xml_dir': 'xml_reports/'
@@ -172,6 +193,7 @@ class parse_argsTestCase(TestCase):
             'project_import': None,
             "race": False,
             'short': False,
+            'tag': None,
             'test_path': None,
             'xml': False,
             'xml_dir': '/foo/bar/'
@@ -186,6 +208,7 @@ class parse_argsTestCase(TestCase):
             'project_import': None,
             "race": True,
             'short': False,
+            'tag': None,
             'test_path': None,
             'xml': False,
             'xml_dir': 'xml_reports/'

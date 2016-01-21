@@ -32,7 +32,7 @@ def check_failed(return_code):
 
 def generate_coverage(
         packages, project_package, project_root, godep, short, xml, xml_dir,
-        race):
+        race, tag):
     """ Generate the coverage for a list of packages.
 
     :type package: list
@@ -51,6 +51,8 @@ def generate_coverage(
     :param xml_dir: The location that the xml reports should be made
     :type race: bool
     :param race: If the race flag should be used or not
+    :type tag: string
+    :param tag: A custom build tag to use when running go test
     """
 
     max_threads = 20
@@ -73,7 +75,8 @@ def generate_coverage(
                 short,
                 xml,
                 xml_dir,
-                race
+                race,
+                tag
             ))
             t.daemon = True
             t.start()
@@ -85,7 +88,7 @@ def generate_coverage(
 
 def generate_package_coverage(
         test_path, project_package, test_package, project_root, godep, short,
-        xml, xml_dir, race):
+        xml, xml_dir, race, tag):
     """ Generates the coverage report for a package.
 
     :type test_path: string
@@ -123,6 +126,9 @@ def generate_package_coverage(
 
     if race:
         options.append("-race")
+
+    if tag:
+        options.append("-tag {}".format(tag))
 
     if xml:
         return generate_xml(xml_dir + test_package, options, test_path)

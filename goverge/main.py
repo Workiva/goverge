@@ -97,7 +97,7 @@ def goverge(options):
 
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
-        options.xml, options.xml_dir, options.race)
+        options.xml, options.xml_dir, options.race, options.tag)
 
     reports = get_coverage_reports("./reports")
 
@@ -153,6 +153,14 @@ def _parse_args(argv):
         default=False,
         help=(
             'Run coverage using the -short flag'
+        )
+    )
+
+    p.add_argument(
+        '--tag',
+        action='store',
+        help=(
+            "Use an optional build tag when running tests."
         )
     )
 
