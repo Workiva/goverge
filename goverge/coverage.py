@@ -32,7 +32,7 @@ def check_failed(return_code):
 
 def generate_coverage(
         packages, project_package, project_root, godep, short, xml, xml_dir,
-        race, tag, integration):
+        race, tag):
     """ Generate the coverage for a list of packages.
 
     :type package: list
@@ -53,8 +53,6 @@ def generate_coverage(
     :param race: If the race flag should be used or not
     :type tag: string
     :param tag: A custom build tag to use when running go test
-    :type integration: bool
-    :param integration: If integration tests are running
     """
 
     max_threads = 20
@@ -79,7 +77,6 @@ def generate_coverage(
                 xml_dir,
                 race,
                 tag,
-                integration
             ))
             t.daemon = True
             t.start()
@@ -91,7 +88,7 @@ def generate_coverage(
 
 def generate_package_coverage(
         test_path, project_package, test_package, project_root, godep, short,
-        xml, xml_dir, race, tag, integration):
+        xml, xml_dir, race, tag):
     """ Generates the coverage report for a package.
 
     :type test_path: string
@@ -112,12 +109,10 @@ def generate_package_coverage(
     :param race: If the race flag should be used or not
     :type tag: string
     :param tag: A custom build tag to use when running go test
-    :type integration: bool
-    :param integration: If integration tests are running
     """
 
     # Get the dependencies of the package we are testing
-    package_deps = get_package_deps(project_package, test_path, integration)
+    package_deps = get_package_deps(project_package, test_path)
 
     options = [
         "go", "test", "-v", '-covermode=set',
@@ -173,7 +168,7 @@ def generate_xml(output_loc, options, test_path):
     check_failed(p.returncode)
 
 
-def get_package_deps(project_package, test_path, integration):
+def get_package_deps(project_package, test_path):
     """ Gets the packages dependencies that are part of the project.
 
     :type project_package: string
@@ -182,23 +177,21 @@ def get_package_deps(project_package, test_path, integration):
     :param test_path: The path of the package that is under test
     :rtype: list
     :return: Project dependencies
-    :type integration: bool
-    :param integration: If integration tests are running
     """
-    if integration:
-        output, _ = subprocess.Popen(
-            ["go", "list", "./..."],
-            stdout=subprocess.PIPE).communicate()
-        return [package for package in output.split()
-                if "tests" not in package]
 
     output, _ = subprocess.Popen(
         ["go", "list", "-f", "'{{.Deps}}'"],
         stdout=subprocess.PIPE, cwd=test_path).communicate()
 
+    test_output, _ = subprocess.Popen(
+        ["go", "list", "-f", "'{{.TestImports}}'"],
+        stdout=subprocess.PIPE, cwd=test_path).communicate()
+
+    output = test_output.split() + output.split()
+
     package_deps = [
         package.replace("]", "").replace("[", "").replace("'", "")
-        for package in output.split()
+        for package in list(set(output))
         if project_package.split("\n")[0] in package]
 
     package_deps.append(".")

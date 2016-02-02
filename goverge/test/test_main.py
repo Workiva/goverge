@@ -67,7 +67,7 @@ class GovergeTestCase(TestCase):
         assert mock_cwd.called
         gen_cov.assert_called_once_with(
             ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
-            False, 'xml_reports/', True, None, False)
+            False, 'xml_reports/', True, None)
         assert mock_comm.called
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
@@ -80,7 +80,6 @@ class parse_argsTestCase(TestCase):
         expected = {
             'godep': True,
             'html': False,
-            'integration': False,
             'project_import': None,
             "race": False,
             'short': False,
@@ -96,7 +95,6 @@ class parse_argsTestCase(TestCase):
         expected = {
             'godep': False,
             'html': True,
-            'integration': False,
             'project_import': None,
             "race": False,
             'short': False,
@@ -107,28 +105,11 @@ class parse_argsTestCase(TestCase):
         }
         self.assertEquals(expected, vars(args))
 
-    def test_integration(self):
-        args = main._parse_args(['--integration'])
-        expected = {
-            'godep': False,
-            'html': False,
-            'integration': True,
-            'project_import': None,
-            "race": False,
-            'short': False,
-            'tag': None,
-            'test_path': None,
-            'xml': False,
-            'xml_dir': 'xml_reports/'
-        }
-        self.assertEqual(expected, vars(args))
-
     def test_short(self):
         args = main._parse_args(['--short'])
         expected = {
             'godep': False,
             'html': False,
-            'integration': False,
             'project_import': None,
             "race": False,
             'short': True,
@@ -144,7 +125,6 @@ class parse_argsTestCase(TestCase):
         expected = {
             'godep': False,
             'html': False,
-            'integration': False,
             'project_import': None,
             "race": False,
             'short': False,
@@ -163,7 +143,6 @@ class parse_argsTestCase(TestCase):
         expected = {
             'godep': False,
             'html': False,
-            'integration': False,
             'project_import': None,
             "race": False,
             'short': False,
@@ -181,7 +160,6 @@ class parse_argsTestCase(TestCase):
         expected = {
             'godep': False,
             'html': False,
-            'integration': False,
             'project_import': "github.com/Workiva/goverge",
             "race": False,
             'short': False,
@@ -197,7 +175,6 @@ class parse_argsTestCase(TestCase):
         expected = {
             'godep': False,
             'html': False,
-            'integration': False,
             'project_import': None,
             "race": False,
             'short': False,
@@ -213,7 +190,6 @@ class parse_argsTestCase(TestCase):
         expected = {
             'godep': False,
             'html': False,
-            'integration': False,
             'project_import': None,
             "race": False,
             'short': False,
@@ -229,7 +205,6 @@ class parse_argsTestCase(TestCase):
         expected = {
             'godep': False,
             'html': False,
-            'integration': False,
             'project_import': None,
             "race": True,
             'short': False,

@@ -97,8 +97,7 @@ def goverge(options):
 
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
-        options.xml, options.xml_dir, options.race, options.tag,
-        options.integration)
+        options.xml, options.xml_dir, options.race, options.tag)
 
     reports = get_coverage_reports("./reports")
 
@@ -136,17 +135,6 @@ def _parse_args(argv):
         default=False,
         help=(
             "View a html report of the coverage file that is generated."
-        )
-    )
-
-    p.add_argument(
-        '--integration',
-        action='store_true',
-        default=False,
-        help=(
-            "If running integration tests get the coverage for all local "
-            "packages, this is helpful since there isn't a way to get test "
-            "package dependencies."
         )
     )
 
