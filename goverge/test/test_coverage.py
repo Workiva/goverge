@@ -35,16 +35,16 @@ class TestCheckFailed(unittest.TestCase):
 class TestCoverage(unittest.TestCase):
 
     @patch('goverge.coverage.subprocess.call', return_value=0)
-    def test_generate_package_coverage_godep_short_race_int(
+    def test_generate_package_coverage_godep_short_race(
             self, mock_call, mock_deps):
         mock_deps.return_value = ["foo/bar", "foo/bar/baz", "."]
 
         generate_package_coverage(
             "test_path", "project_package", "test_package", "project_root",
-            True, True, False, "foo/", True, "foo", True)
+            True, True, False, "foo/", True, "foo")
 
         mock_deps.assert_called_once_with(
-            "project_package", "test_path", True)
+            "project_package", "test_path")
 
         mock_call.assert_called_once_with([
             "godep", "go", "test", "-v", '-covermode=set',
@@ -58,10 +58,10 @@ class TestCoverage(unittest.TestCase):
 
         generate_package_coverage(
             "test_path", "project_package", "test_package", "project_root",
-            False, False, False, "foo/", False, None, False)
+            False, False, False, "foo/", False, None)
 
         mock_deps.assert_called_once_with(
-            "project_package", "test_path", False)
+            "project_package", "test_path")
 
         mock_call.assert_called_once_with([
             "go", "test", "-v", '-covermode=set',
@@ -75,10 +75,10 @@ class TestCoverage(unittest.TestCase):
 
         generate_package_coverage(
             "test_path", "project_package", "test_package", "project_root",
-            False, False, True, "foo/", False, None, False)
+            False, False, True, "foo/", False, None)
 
         mock_deps.assert_called_once_with(
-            "project_package", "test_path", False)
+            "project_package", "test_path")
 
         mock_gen_xml.assert_called_once_with(
             "foo/test_package",
@@ -100,21 +100,9 @@ class TestPackageDeps(unittest.TestCase):
         mock_communicate.return_value = (
             '[foo/bar/a bar/baz foo/bar/b foo/bar/c]', '')
 
-        deps = get_package_deps("foo/bar", ".", False)
+        deps = get_package_deps("foo/bar", ".")
 
         mock_communicate.assert_called_once()
 
-        self.assertEquals(deps, ["foo/bar/a", "foo/bar/b", "foo/bar/c", "."])
-
-    @patch('goverge.coverage.subprocess.Popen')
-    @patch('goverge.coverage.subprocess.Popen.communicate')
-    def test_package_deps_int(self, mock_communicate, mock_popen):
-        mock_popen.return_value = Popen
-        mock_communicate.return_value = (
-            'foo/bar/a\nfoo/bar/b\nfoo/tests/c', '')
-
-        deps = get_package_deps("foo/bar", ".", True)
-
-        mock_communicate.assert_called_once()
-
-        self.assertEquals(deps, ["foo/bar/a", "foo/bar/b"])
+        self.assertEquals(
+            sorted(deps), sorted(["foo/bar/a", "foo/bar/b", "foo/bar/c", "."]))
