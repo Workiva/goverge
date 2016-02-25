@@ -63,8 +63,10 @@ def compile_reports(reports):
                     if int(line_parts[2]) == 0:
                         continue
 
-                    # Add the line covered count to the msater line
-                    line_parts[2] = str(int(master_line.split(" ")[2]) + int(line_parts[2])) + "\n"
+                    # Add the line covered count to the master line
+                    line_parts[2] = str(
+                        int(master_line.split(" ")[2]) +
+                        int(line_parts[2])) + "\n"
 
                     package_reports[line_parts[0]] = " ".join(line_parts)
 

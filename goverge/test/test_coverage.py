@@ -106,4 +106,3 @@ class TestPackageDeps(unittest.TestCase):
 
         self.assertEquals(
             sorted(deps), sorted(["foo/bar/a", "foo/bar/b", "foo/bar/c", "."]))
-
