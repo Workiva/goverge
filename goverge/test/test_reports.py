@@ -59,7 +59,7 @@ class TestCompileReports(unittest.TestCase):
         compile_reports(reports)
         lines = [
             "mode: set\n",
-            "foo/bar/foo.go:2.85,18.2 1 1\n",
+            "foo/bar/foo.go:2.85,18.2 1 2\n",
             "foo/bar/foo.go:23.85,25.8 1 1\n",
             "foo/bar/bar.go:1.85,4.2 1 0\n",
             "foo/bar/bar.go:7.85,12.8 1 1\n"

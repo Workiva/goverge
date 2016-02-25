@@ -47,7 +47,7 @@ class TestCoverage(unittest.TestCase):
             "project_package", "test_path")
 
         mock_call.assert_called_once_with([
-            "godep", "go", "test", "-v", '-covermode=set',
+            "godep", "go", "test", "-v", '-covermode=count',
             u"-coverprofile=project_root/reports/test_package.txt",
             u"-coverpkg=foo/bar,foo/bar/baz,.", "-short", "-race", "-tag foo"
         ], cwd="test_path")
@@ -64,7 +64,7 @@ class TestCoverage(unittest.TestCase):
             "project_package", "test_path")
 
         mock_call.assert_called_once_with([
-            "go", "test", "-v", '-covermode=set',
+            "go", "test", "-v", '-covermode=count',
             u"-coverprofile=project_root/reports/test_package.txt",
             u"-coverpkg=foo/bar,foo/bar/baz,."
         ], cwd="test_path")
@@ -83,7 +83,7 @@ class TestCoverage(unittest.TestCase):
         mock_gen_xml.assert_called_once_with(
             "foo/test_package",
             [
-                "go", "test", "-v", '-covermode=set',
+                "go", "test", "-v", '-covermode=count',
                 u"-coverprofile=project_root/reports/test_package.txt",
                 u"-coverpkg=foo/bar,foo/bar/baz,."
             ],
@@ -106,3 +106,4 @@ class TestPackageDeps(unittest.TestCase):
 
         self.assertEquals(
             sorted(deps), sorted(["foo/bar/a", "foo/bar/b", "foo/bar/c", "."]))
+

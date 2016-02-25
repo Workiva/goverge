@@ -48,12 +48,13 @@ def compile_reports(reports):
         with open(report) as report_file:
             for line in report_file.readlines():
                 # If we get a blank line or a mode line just ignore them
-                if line == "mode: set\n" or line == "":
+                if line == "mode: count\n" or line == "":
                     continue
 
                 line_parts = line.split(" ")
                 if len(line_parts) != 3:
                     logging.error(u"Invalid report line: {}".format(line))
+                    continue
 
                 # Check if the line is already in the master list
                 master_line = package_reports.get(line_parts[0])
@@ -62,12 +63,10 @@ def compile_reports(reports):
                     if int(line_parts[2]) == 0:
                         continue
 
-                    # If master value is already 1 we don't need to update it
-                    if int(master_line.split(" ")[2]) == 1:
-                        continue
+                    # Add the line covered count to the msater line
+                    line_parts[2] = str(int(master_line.split(" ")[2]) + int(line_parts[2])) + "\n"
 
-                    # Replace the line in the master list with the new line
-                    package_reports[line_parts[0]] = line
+                    package_reports[line_parts[0]] = " ".join(line_parts)
 
                 # If the line isn't already in the master list just append it
                 else:

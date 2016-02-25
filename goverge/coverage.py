@@ -55,7 +55,7 @@ def generate_coverage(
     :param tag: A custom build tag to use when running go test
     """
 
-    max_threads = 20
+    max_threads = 4
     threads = []
     while threads or packages:
 
@@ -115,7 +115,7 @@ def generate_package_coverage(
     package_deps = get_package_deps(project_package, test_path)
 
     options = [
-        "go", "test", "-v", '-covermode=set',
+        "go", "test", "-v", '-covermode=count',
         u"-coverprofile={0}/reports/{1}.txt".format(
             project_root, test_package),
         u"-coverpkg={0}".format(",".join(package_deps))]
