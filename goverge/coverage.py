@@ -115,7 +115,7 @@ def generate_package_coverage(
     package_deps = get_package_deps(project_package, test_path)
 
     options = [
-        "go", "test", "-v", '-covermode=count',
+        "go", "test", '-covermode=count',
         u"-coverprofile={0}/reports/{1}.txt".format(
             project_root, test_package),
         u"-coverpkg={0}".format(",".join(package_deps))]
@@ -155,7 +155,7 @@ def generate_xml(output_loc, options, test_path):
 
     with open(output_file, "w") as out_file:
         p = subprocess.Popen(
-            options, cwd=test_path, stdout=subprocess.PIPE,
+            options + '-v', cwd=test_path, stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
         for line in p.stdout:
             sys.stdout.write(line)
