@@ -155,7 +155,7 @@ def generate_xml(output_loc, options, test_path):
 
     with open(output_file, "w") as out_file:
         p = subprocess.Popen(
-            options + '-v', cwd=test_path, stdout=subprocess.PIPE,
+            options + ['-v'], cwd=test_path, stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
         for line in p.stdout:
             sys.stdout.write(line)
