@@ -23,6 +23,7 @@ from subprocess import Popen
 import sys
 
 
+from _pkg_meta import version
 from coverage import generate_coverage
 from reports import compile_reports
 from reports import get_coverage_reports
@@ -97,7 +98,8 @@ def goverge(options):
 
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
-        options.xml, options.xml_dir, options.race, options.tag)
+        options.xml, options.xml_dir, options.race, options.tag,
+        int(options.threads))
 
     reports = get_coverage_reports("./reports")
 
@@ -122,6 +124,12 @@ def _parse_args(argv):
     """
 
     p = argparse.ArgumentParser(prog='goverge')
+
+    p.add_argument(
+        '--version',
+        action='version',
+        version='goverge ' + version)
+
     p.add_argument(
         '--godep',
         action='store_true',
@@ -182,6 +190,15 @@ def _parse_args(argv):
         help=(
             'Path(s) to a specific package to get the coverage on\n'
             'Example: --test_path path/one --test_path path/two'
+        )
+    )
+
+    p.add_argument(
+        '--threads',
+        action='store',
+        default=4,
+        help=(
+            "Number of threads to use when running tests."
         )
     )
 

@@ -67,7 +67,7 @@ class GovergeTestCase(TestCase):
         assert mock_cwd.called
         gen_cov.assert_called_once_with(
             ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
-            False, 'xml_reports/', True, None)
+            False, 'xml_reports/', True, None, 4)
         assert mock_comm.called
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
@@ -85,6 +85,7 @@ class parse_argsTestCase(TestCase):
             'short': False,
             'tag': None,
             'test_path': None,
+            'threads': 4,
             'xml': False,
             'xml_dir': 'xml_reports/'
         }
@@ -100,6 +101,7 @@ class parse_argsTestCase(TestCase):
             'short': False,
             'tag': None,
             'test_path': None,
+            'threads': 4,
             'xml': False,
             'xml_dir': 'xml_reports/'
         }
@@ -115,6 +117,7 @@ class parse_argsTestCase(TestCase):
             'short': True,
             'tag': None,
             'test_path': None,
+            'threads': 4,
             'xml': False,
             'xml_dir': 'xml_reports/'
         }
@@ -130,6 +133,7 @@ class parse_argsTestCase(TestCase):
             'short': False,
             'tag': "foo",
             'test_path': None,
+            'threads': 4,
             'xml': False,
             'xml_dir': 'xml_reports/'
         }
@@ -148,6 +152,7 @@ class parse_argsTestCase(TestCase):
             'short': False,
             'tag': None,
             'test_path': ['/foo/bar', '/bar/foo'],
+            'threads': 4,
             'xml': False,
             'xml_dir': 'xml_reports/'
         }
@@ -165,6 +170,7 @@ class parse_argsTestCase(TestCase):
             'short': False,
             'tag': None,
             'test_path': None,
+            'threads': 4,
             'xml': False,
             'xml_dir': 'xml_reports/'
         }
@@ -180,6 +186,7 @@ class parse_argsTestCase(TestCase):
             'short': False,
             'tag': None,
             'test_path': None,
+            'threads': 4,
             'xml': True,
             'xml_dir': 'xml_reports/'
         }
@@ -195,6 +202,7 @@ class parse_argsTestCase(TestCase):
             'short': False,
             'tag': None,
             'test_path': None,
+            'threads': 4,
             'xml': False,
             'xml_dir': '/foo/bar/'
         }
@@ -210,6 +218,23 @@ class parse_argsTestCase(TestCase):
             'short': False,
             'tag': None,
             'test_path': None,
+            'threads': 4,
+            'xml': False,
+            'xml_dir': 'xml_reports/'
+        }
+        self.assertEquals(expected, vars(args))
+
+    def test_threads(self):
+        args = main._parse_args(["--threads=10"])
+        expected = {
+            'godep': False,
+            'html': False,
+            'project_import': None,
+            "race": False,
+            'short': False,
+            'tag': None,
+            'test_path': None,
+            'threads': '10',
             'xml': False,
             'xml_dir': 'xml_reports/'
         }

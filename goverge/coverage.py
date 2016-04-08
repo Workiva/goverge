@@ -32,7 +32,7 @@ def check_failed(return_code):
 
 def generate_coverage(
         packages, project_package, project_root, godep, short, xml, xml_dir,
-        race, tag):
+        race, tag, max_threads):
     """ Generate the coverage for a list of packages.
 
     :type package: list
@@ -53,9 +53,10 @@ def generate_coverage(
     :param race: If the race flag should be used or not
     :type tag: string
     :param tag: A custom build tag to use when running go test
+    :type max_threads: int
+    :param max_threads: The number of threads for the tests to run on
     """
 
-    max_threads = 4
     threads = []
     while threads or packages:
 
