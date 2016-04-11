@@ -75,10 +75,10 @@ class GovergeTestCase(TestCase):
 
 
 class parse_argsTestCase(TestCase):
-    def test_godep(self):
-        args = main._parse_args(['--godep'])
+    def test_default(self):
+        args = main._parse_args([])
         expected = {
-            'godep': True,
+            'godep': False,
             'html': False,
             'project_import': None,
             "race": False,
@@ -89,128 +89,50 @@ class parse_argsTestCase(TestCase):
             'xml_dir': 'xml_reports/'
         }
         self.assertEqual(expected, vars(args))
+
+    def test_godep(self):
+        args = main._parse_args(['--godep'])
+        self.assertTrue(vars(args).get('godep'))
 
     def test_html(self):
         args = main._parse_args(["--html"])
-        expected = {
-            'godep': False,
-            'html': True,
-            'project_import': None,
-            "race": False,
-            'short': False,
-            'tag': None,
-            'test_path': None,
-            'xml': False,
-            'xml_dir': 'xml_reports/'
-        }
-        self.assertEquals(expected, vars(args))
-
-    def test_short(self):
-        args = main._parse_args(['--short'])
-        expected = {
-            'godep': False,
-            'html': False,
-            'project_import': None,
-            "race": False,
-            'short': True,
-            'tag': None,
-            'test_path': None,
-            'xml': False,
-            'xml_dir': 'xml_reports/'
-        }
-        self.assertEqual(expected, vars(args))
-
-    def test_tag(self):
-        args = main._parse_args(["--tag=foo"])
-        expected = {
-            'godep': False,
-            'html': False,
-            'project_import': None,
-            "race": False,
-            'short': False,
-            'tag': "foo",
-            'test_path': None,
-            'xml': False,
-            'xml_dir': 'xml_reports/'
-        }
-        self.assertEquals(expected, vars(args))
+        self.assertTrue(vars(args).get('html'))
 
     def test_path(self):
         args = main._parse_args([
             "--test_path=/foo/bar",
             "--test_path=/bar/foo"
         ])
-        expected = {
-            'godep': False,
-            'html': False,
-            'project_import': None,
-            "race": False,
-            'short': False,
-            'tag': None,
-            'test_path': ['/foo/bar', '/bar/foo'],
-            'xml': False,
-            'xml_dir': 'xml_reports/'
-        }
-        self.assertEquals(expected, vars(args))
+        self.assertEquals(
+            ['/foo/bar', '/bar/foo'],
+            vars(args).get('test_path')
+        )
 
     def test_project_import(self):
         args = main._parse_args([
             "--project_import=github.com/Workiva/goverge"
         ])
-        expected = {
-            'godep': False,
-            'html': False,
-            'project_import': "github.com/Workiva/goverge",
-            "race": False,
-            'short': False,
-            'tag': None,
-            'test_path': None,
-            'xml': False,
-            'xml_dir': 'xml_reports/'
-        }
-        self.assertEquals(expected, vars(args))
-
-    def test_xml(self):
-        args = main._parse_args(["--xml"])
-        expected = {
-            'godep': False,
-            'html': False,
-            'project_import': None,
-            "race": False,
-            'short': False,
-            'tag': None,
-            'test_path': None,
-            'xml': True,
-            'xml_dir': 'xml_reports/'
-        }
-        self.assertEquals(expected, vars(args))
-
-    def test_xml_dir(self):
-        args = main._parse_args(["--xml_dir=/foo/bar/"])
-        expected = {
-            'godep': False,
-            'html': False,
-            'project_import': None,
-            "race": False,
-            'short': False,
-            'tag': None,
-            'test_path': None,
-            'xml': False,
-            'xml_dir': '/foo/bar/'
-        }
-        self.assertEquals(expected, vars(args))
+        self.assertEquals(
+            "github.com/Workiva/goverge",
+            vars(args).get('project_import')
+        )
 
     def test_race(self):
         args = main._parse_args(["--race"])
-        expected = {
-            'godep': False,
-            'html': False,
-            'project_import': None,
-            "race": True,
-            'short': False,
-            'tag': None,
-            'test_path': None,
-            'xml': False,
-            'xml_dir': 'xml_reports/'
-        }
-        self.assertEquals(expected, vars(args))
+        self.assertTrue(vars(args).get('race'))
+
+    def test_short(self):
+        args = main._parse_args(['--short'])
+        self.assertTrue(vars(args).get('short'))
+
+    def test_tag(self):
+        args = main._parse_args(["--tag=foo"])
+        self.assertEquals("foo", vars(args).get('tag'))
+
+    def test_xml(self):
+        args = main._parse_args(["--xml"])
+        self.assertTrue(vars(args).get('xml'))
+
+    def test_xml_dir(self):
+        args = main._parse_args(["--xml_dir=/foo/bar/"])
+        self.assertEquals('/foo/bar/', vars(args).get('xml_dir'))
