@@ -128,7 +128,8 @@ def _parse_args(argv):
     p.add_argument(
         '--version',
         action='version',
-        version='goverge ' + version)
+        version='goverge ' + version,
+    help=('Display the installed version'))
 
     p.add_argument(
         '--godep',
@@ -198,7 +199,7 @@ def _parse_args(argv):
         action='store',
         default=4,
         help=(
-            "Number of threads to use when running tests."
+            "The Maximum number of threads to use when running tests."
         )
     )
 

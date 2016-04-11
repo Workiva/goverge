@@ -54,7 +54,7 @@ def generate_coverage(
     :type tag: string
     :param tag: A custom build tag to use when running go test
     :type max_threads: int
-    :param max_threads: The number of threads for the tests to run on
+    :param max_threads: The maximum number of threads for the tests to run on
     """
 
     threads = []
