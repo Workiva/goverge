@@ -23,6 +23,7 @@ from subprocess import Popen
 import sys
 
 
+from _pkg_meta import version
 from coverage import generate_coverage
 from reports import compile_reports
 from reports import get_coverage_reports
@@ -97,7 +98,8 @@ def goverge(options):
 
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
-        options.xml, options.xml_dir, options.race, options.tag)
+        options.xml, options.xml_dir, options.race, options.tag,
+        int(options.threads))
 
     reports = get_coverage_reports("./reports")
 
@@ -122,29 +124,33 @@ def _parse_args(argv):
     """
 
     p = argparse.ArgumentParser(prog='goverge')
+
+    p.add_argument(
+        '--version',
+        action='version',
+        version='goverge ' + version,
+        help='Display the installed version'
+    )
+
     p.add_argument(
         '--godep',
         action='store_true',
         default=False,
-        help=(
-            'Run coverage using the projects godep files.'))
+        help='Run coverage using the projects godep files.'
+        )
 
     p.add_argument(
         '--html',
         action='store_true',
         default=False,
-        help=(
-            "View a html report of the coverage file that is generated."
-        )
+        help="View a html report of the coverage file that is generated."
     )
 
     p.add_argument(
         '--race',
         action='store_true',
         default=False,
-        help=(
-            "Run tests using the -race flag"
-        )
+        help="Run tests using the -race flag"
     )
 
     p.add_argument(
@@ -162,17 +168,13 @@ def _parse_args(argv):
         '--short',
         action='store_true',
         default=False,
-        help=(
-            'Run coverage using the -short flag'
-        )
+        help='Run coverage using the -short flag'
     )
 
     p.add_argument(
         '--tag',
         action='store',
-        help=(
-            "Use an optional build tag when running tests."
-        )
+        help="Use an optional build tag when running tests."
     )
 
     p.add_argument(
@@ -183,6 +185,13 @@ def _parse_args(argv):
             'Path(s) to a specific package to get the coverage on\n'
             'Example: --test_path path/one --test_path path/two'
         )
+    )
+
+    p.add_argument(
+        '--threads',
+        action='store',
+        default=4,
+        help='The Maximum number of threads to use when running tests.'
     )
 
     p.add_argument(
@@ -199,9 +208,7 @@ def _parse_args(argv):
         '--xml_dir',
         action='store',
         default="xml_reports/",
-        help=(
-            "The location to put the xml reports that are generated."
-        )
+        help="The location to put the xml reports that are generated."
     )
 
     return p.parse_args(argv)

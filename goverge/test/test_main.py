@@ -67,7 +67,7 @@ class GovergeTestCase(TestCase):
         assert mock_cwd.called
         gen_cov.assert_called_once_with(
             ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
-            False, 'xml_reports/', True, None)
+            False, 'xml_reports/', True, None, 4)
         assert mock_comm.called
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
@@ -85,6 +85,7 @@ class parse_argsTestCase(TestCase):
             'short': False,
             'tag': None,
             'test_path': None,
+            'threads': 4,
             'xml': False,
             'xml_dir': 'xml_reports/'
         }
@@ -112,6 +113,7 @@ class parse_argsTestCase(TestCase):
         args = main._parse_args([
             "--project_import=github.com/Workiva/goverge"
         ])
+
         self.assertEquals(
             "github.com/Workiva/goverge",
             vars(args).get('project_import')
@@ -128,6 +130,10 @@ class parse_argsTestCase(TestCase):
     def test_tag(self):
         args = main._parse_args(["--tag=foo"])
         self.assertEquals("foo", vars(args).get('tag'))
+
+    def test_threads(self):
+        args = main._parse_args(["--threads=10"])
+        self.assertEquals('10', vars(args).get('threads'))
 
     def test_xml(self):
         args = main._parse_args(["--xml"])
