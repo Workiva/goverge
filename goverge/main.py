@@ -129,7 +129,8 @@ def _parse_args(argv):
         '--version',
         action='version',
         version='goverge ' + version,
-    help=('Display the installed version'))
+        help=('Display the installed version')
+    )
 
     p.add_argument(
         '--godep',
