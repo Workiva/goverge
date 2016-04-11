@@ -226,16 +226,4 @@ class parse_argsTestCase(TestCase):
 
     def test_threads(self):
         args = main._parse_args(["--threads=10"])
-        expected = {
-            'godep': False,
-            'html': False,
-            'project_import': None,
-            "race": False,
-            'short': False,
-            'tag': None,
-            'test_path': None,
-            'threads': '10',
-            'xml': False,
-            'xml_dir': 'xml_reports/'
-        }
-        self.assertEquals(expected, vars(args))
+        self.assertEquals('10', vars(args).get('threads'))
