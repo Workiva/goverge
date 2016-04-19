@@ -153,7 +153,8 @@ def generate_xml(output_loc, options, test_path):
     """
 
     output_file = output_loc + ".out"
-
+    print("=======This is the output file path=======:")
+    print(output_file)
     with open(output_file, "w") as out_file:
         p = subprocess.Popen(
             options + ['-v'], cwd=test_path, stdout=subprocess.PIPE,
