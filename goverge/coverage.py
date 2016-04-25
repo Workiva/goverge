@@ -131,7 +131,7 @@ def generate_package_coverage(
         options.append("-race")
 
     if tag:
-        options.append("-tag {}".format(tag))
+        options.append("-tags {}".format(tag))
 
     if xml:
         return generate_xml(xml_dir + test_package, options, test_path)

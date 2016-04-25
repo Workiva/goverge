@@ -49,7 +49,7 @@ class TestCoverage(unittest.TestCase):
         mock_call.assert_called_once_with([
             "godep", "go", "test", '-covermode=count',
             u"-coverprofile=project_root/reports/test_package.txt",
-            u"-coverpkg=foo/bar,foo/bar/baz,.", "-short", "-race", "-tag foo"
+            u"-coverpkg=foo/bar,foo/bar/baz,.", "-short", "-race", "-tags foo"
         ], cwd="test_path")
 
     @patch('goverge.coverage.subprocess.call', return_value=0)
