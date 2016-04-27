@@ -44,12 +44,12 @@ class TestCoverage(unittest.TestCase):
             True, True, False, "foo/", True, "foo")
 
         mock_deps.assert_called_once_with(
-            "project_package", "test_path")
+            "project_package", "test_path", "foo")
 
         mock_call.assert_called_once_with([
             "godep", "go", "test", '-covermode=count',
             u"-coverprofile=project_root/reports/test_package.txt",
-            u"-coverpkg=foo/bar,foo/bar/baz,.", "-short", "-race", "-tags foo"
+            u"-coverpkg=foo/bar,foo/bar/baz,.", "-short", "-race", "-tags=foo"
         ], cwd="test_path")
 
     @patch('goverge.coverage.subprocess.call', return_value=0)
@@ -61,7 +61,7 @@ class TestCoverage(unittest.TestCase):
             False, False, False, "foo/", False, None)
 
         mock_deps.assert_called_once_with(
-            "project_package", "test_path")
+            "project_package", "test_path", None)
 
         mock_call.assert_called_once_with([
             "go", "test", '-covermode=count',
@@ -78,7 +78,7 @@ class TestCoverage(unittest.TestCase):
             False, False, True, "foo/", False, None)
 
         mock_deps.assert_called_once_with(
-            "project_package", "test_path")
+            "project_package", "test_path", None)
 
         mock_gen_xml.assert_called_once_with(
             "foo/test_package",
@@ -98,9 +98,9 @@ class TestPackageDeps(unittest.TestCase):
     def test_package_deps(self, mock_communicate, mock_popen):
         mock_popen.return_value = Popen
         mock_communicate.return_value = (
-            '[foo/bar/a bar/baz foo/bar/b foo/bar/c]', '')
+            '[foo/bar/a bar/baz foo/bar/b foo/bar/c]', None)
 
-        deps = get_package_deps("foo/bar", ".")
+        deps = get_package_deps("foo/bar", ".", "foo")
 
         mock_communicate.assert_called_once()
 

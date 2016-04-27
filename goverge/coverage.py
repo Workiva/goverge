@@ -113,7 +113,7 @@ def generate_package_coverage(
     """
 
     # Get the dependencies of the package we are testing
-    package_deps = get_package_deps(project_package, test_path)
+    package_deps = get_package_deps(project_package, test_path, tag)
 
     options = [
         "go", "test", '-covermode=count',
@@ -131,7 +131,7 @@ def generate_package_coverage(
         options.append("-race")
 
     if tag:
-        options.append("-tags {}".format(tag))
+        options.append("-tags={}".format(tag))
 
     if xml:
         return generate_xml(xml_dir + test_package, options, test_path)
@@ -169,23 +169,27 @@ def generate_xml(output_loc, options, test_path):
     check_failed(p.returncode)
 
 
-def get_package_deps(project_package, test_path):
+def get_package_deps(project_package, test_path, tag):
     """ Gets the packages dependencies that are part of the project.
 
     :type project_package: string
     :param project_package: The base package of the project
     :type test_path: string
     :param test_path: The path of the package that is under test
+    :type tag: string
+    :param tag: A custom build tag to use when running go test
     :rtype: list
     :return: Project dependencies
     """
 
     output, _ = subprocess.Popen(
-        ["go", "list", "-f", "'{{.Deps}}'"],
+        ["go", "list", "-f", "'{{.Deps}}'",
+         "-tags={}".format(tag) if tag else ""],
         stdout=subprocess.PIPE, cwd=test_path).communicate()
 
     test_output, _ = subprocess.Popen(
-        ["go", "list", "-f", "'{{.TestImports}}'"],
+        ["go", "list", "-f", "'{{.TestImports}}'",
+         "-tags={}".format(tag) if tag else ""],
         stdout=subprocess.PIPE, cwd=test_path).communicate()
 
     output = test_output.split() + output.split()
