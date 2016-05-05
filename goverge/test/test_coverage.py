@@ -41,7 +41,7 @@ class TestCoverage(unittest.TestCase):
 
         generate_package_coverage(
             "test_path", "project_package", "test_package", "project_root",
-            True, True, False, "foo/", True, "foo")
+            True, True, False, "foo/", True, "foo", ["-x", "-timeout=5m"])
 
         mock_deps.assert_called_once_with(
             "project_package", "test_path", "foo")
@@ -49,7 +49,8 @@ class TestCoverage(unittest.TestCase):
         mock_call.assert_called_once_with([
             "godep", "go", "test", '-covermode=count',
             u"-coverprofile=project_root/reports/test_package.txt",
-            u"-coverpkg=foo/bar,foo/bar/baz,.", "-short", "-race", "-tags=foo"
+            u"-coverpkg=foo/bar,foo/bar/baz,.", "-short", "-race", "-tags=foo",
+            "-x", "-timeout=5m"
         ], cwd="test_path")
 
     @patch('goverge.coverage.subprocess.call', return_value=0)
@@ -58,7 +59,7 @@ class TestCoverage(unittest.TestCase):
 
         generate_package_coverage(
             "test_path", "project_package", "test_package", "project_root",
-            False, False, False, "foo/", False, None)
+            False, False, False, "foo/", False, None, None)
 
         mock_deps.assert_called_once_with(
             "project_package", "test_path", None)
@@ -75,7 +76,7 @@ class TestCoverage(unittest.TestCase):
 
         generate_package_coverage(
             "test_path", "project_package", "test_package", "project_root",
-            False, False, True, "foo/", False, None)
+            False, False, True, "foo/", False, None, None)
 
         mock_deps.assert_called_once_with(
             "project_package", "test_path", None)
