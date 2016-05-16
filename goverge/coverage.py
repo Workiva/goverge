@@ -144,8 +144,6 @@ def generate_package_coverage(
     if xml:
         return generate_xml(xml_dir + test_package, options, test_path)
 
-    print("This is the call we are making: {}".format(options))
-
     # Generate the coverage report for each of the package dependencies
     check_failed(subprocess.call(options, cwd=test_path))
 
