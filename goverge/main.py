@@ -98,7 +98,7 @@ def goverge(options):
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
         options.xml, options.xml_dir, options.race, options.tag,
-        int(options.threads), options.custom)
+        int(options.threads), options.go_flags)
 
     reports = get_coverage_reports("./reports")
 
@@ -132,10 +132,10 @@ def _parse_args(argv):
     )
 
     p.add_argument(
-        '--custom',
+        '--go_flags',
         action='append',
         default=None,
-        help='Custom build flags to use when running tests example: '
+        help='Go build flags to use when running tests example: '
              '--custom=-x --custom=-timeout=10m'
         )
 

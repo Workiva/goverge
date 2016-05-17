@@ -78,7 +78,7 @@ class parse_argsTestCase(TestCase):
     def test_default(self):
         args = main._parse_args([])
         expected = {
-            'custom': None,
+            'go_flags': None,
             'godep': False,
             'html': False,
             'project_import': None,
@@ -93,8 +93,8 @@ class parse_argsTestCase(TestCase):
         self.assertEqual(expected, vars(args))
 
     def test_custom(self):
-        args = main._parse_args(['--custom=-x', '--custom=-timeout=5m'])
-        self.assertEqual(["-x", "-timeout=5m"], vars(args).get('custom'))
+        args = main._parse_args(['--go_flags=-x', '--go_flags=-timeout=5m'])
+        self.assertEqual(["-x", "-timeout=5m"], vars(args).get('go_flags'))
 
     def test_godep(self):
         args = main._parse_args(['--godep'])
