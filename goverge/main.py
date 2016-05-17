@@ -136,7 +136,7 @@ def _parse_args(argv):
         action='append',
         default=None,
         help='Go build flags to use when running tests example: '
-             '--custom=-x --custom=-timeout=10m'
+             '--go_flags=-x --go_flags=-timeout=10m'
         )
 
     p.add_argument(
