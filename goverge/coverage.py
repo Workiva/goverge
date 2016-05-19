@@ -32,7 +32,7 @@ def check_failed(return_code):
 
 def generate_coverage(
         packages, project_package, project_root, godep, short, xml, xml_dir,
-        race, tag, max_threads):
+        race, tag, max_threads, go_flags):
     """ Generate the coverage for a list of packages.
 
     :type package: list
@@ -55,6 +55,8 @@ def generate_coverage(
     :param tag: A custom build tag to use when running go test
     :type max_threads: int
     :param max_threads: The maximum number of threads for the tests to run on
+    :type go_flags: list
+    :param go_flags: list of go build flags to use when running tests
     """
 
     threads = []
@@ -78,6 +80,7 @@ def generate_coverage(
                 xml_dir,
                 race,
                 tag,
+                go_flags,
             ))
             t.daemon = True
             t.start()
@@ -89,7 +92,7 @@ def generate_coverage(
 
 def generate_package_coverage(
         test_path, project_package, test_package, project_root, godep, short,
-        xml, xml_dir, race, tag):
+        xml, xml_dir, race, tag, go_flags):
     """ Generates the coverage report for a package.
 
     :type test_path: string
@@ -110,6 +113,8 @@ def generate_package_coverage(
     :param race: If the race flag should be used or not
     :type tag: string
     :param tag: A custom build tag to use when running go test
+    :type go_flags: list
+    :param go_flags: list of go build flags to use when running tests
     """
 
     # Get the dependencies of the package we are testing
@@ -132,6 +137,9 @@ def generate_package_coverage(
 
     if tag:
         options.append("-tags={}".format(tag))
+
+    if go_flags:
+        options += go_flags
 
     if xml:
         return generate_xml(xml_dir + test_package, options, test_path)

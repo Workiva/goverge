@@ -67,7 +67,7 @@ class GovergeTestCase(TestCase):
         assert mock_cwd.called
         gen_cov.assert_called_once_with(
             ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
-            False, 'xml_reports/', True, None, 4)
+            False, 'xml_reports/', True, None, 4, None)
         assert mock_comm.called
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
@@ -78,10 +78,11 @@ class parse_argsTestCase(TestCase):
     def test_default(self):
         args = main._parse_args([])
         expected = {
+            'go_flags': None,
             'godep': False,
             'html': False,
             'project_import': None,
-            "race": False,
+            'race': False,
             'short': False,
             'tag': None,
             'test_path': None,
@@ -90,6 +91,10 @@ class parse_argsTestCase(TestCase):
             'xml_dir': 'xml_reports/'
         }
         self.assertEqual(expected, vars(args))
+
+    def test_custom(self):
+        args = main._parse_args(['--go_flags=-x', '--go_flags=-timeout=5m'])
+        self.assertEqual(["-x", "-timeout=5m"], vars(args).get('go_flags'))
 
     def test_godep(self):
         args = main._parse_args(['--godep'])

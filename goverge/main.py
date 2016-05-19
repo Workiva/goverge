@@ -22,7 +22,6 @@ from subprocess import PIPE
 from subprocess import Popen
 import sys
 
-
 from _pkg_meta import version
 from coverage import generate_coverage
 from reports import compile_reports
@@ -99,7 +98,7 @@ def goverge(options):
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
         options.xml, options.xml_dir, options.race, options.tag,
-        int(options.threads))
+        int(options.threads), options.go_flags)
 
     reports = get_coverage_reports("./reports")
 
@@ -131,6 +130,14 @@ def _parse_args(argv):
         version='goverge ' + version,
         help='Display the installed version'
     )
+
+    p.add_argument(
+        '--go_flags',
+        action='append',
+        default=None,
+        help='Go build flags to use when running tests example: '
+             '--go_flags=-x --go_flags=-timeout=10m'
+        )
 
     p.add_argument(
         '--godep',
