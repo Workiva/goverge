@@ -214,7 +214,7 @@ def _parse_args(argv):
     p.add_argument(
         '--xml_dir',
         action='store',
-        default="xml_reports/",
+        default=os.getcwd() + "/xml_reports/",
         help="The location to put the xml reports that are generated."
     )
 
