@@ -67,7 +67,7 @@ class GovergeTestCase(TestCase):
         assert mock_cwd.called
         gen_cov.assert_called_once_with(
             ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
-            False, 'xml_reports/', True, None, 4, None)
+            False, '/foo/bar/xml_reports/', True, None, 4, None)
         assert mock_comm.called
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
@@ -75,7 +75,8 @@ class GovergeTestCase(TestCase):
 
 
 class parse_argsTestCase(TestCase):
-    def test_default(self):
+    @patch('goverge.main.os.getcwd', return_value="/foo/bar")
+    def test_default(self, mock_getcwd):
         args = main._parse_args([])
         expected = {
             'go_flags': None,
@@ -88,7 +89,7 @@ class parse_argsTestCase(TestCase):
             'test_path': None,
             'threads': 4,
             'xml': False,
-            'xml_dir': 'xml_reports/'
+            'xml_dir': '/foo/bar/xml_reports/'
         }
         self.assertEqual(expected, vars(args))
 
