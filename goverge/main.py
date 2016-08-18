@@ -92,8 +92,10 @@ def goverge(options):
         sub_dirs = options.test_path
 
     else:
-        sub_dirs = [x[0] for x in os.walk(project_root)
-                    if "/." not in x[0] and "Godeps" not in x[0]]
+        sub_dirs = [
+            x[0] for x in os.walk(project_root)
+            if x[0] not in ["/.", "Godeps", "vendor"]
+            ]
 
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
