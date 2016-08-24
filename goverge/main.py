@@ -58,6 +58,19 @@ def get_project_package(project_root, project_import):
     return project_import.replace("'", "")
 
 
+def get_test_packages(project_root):
+    """
+    :type project_root: string
+    :param project_root: The location of the project root
+    :rtype: List
+    :return: The list of to run coverage on
+    """
+    return [
+        x[0] for x in os.walk(project_root)
+        if not any(word in x[0] for word in ["/.", "Godeps", "vendor"])
+        ]
+
+
 def main():
     """Main entry point into goverge."""
 
@@ -92,10 +105,7 @@ def goverge(options):
         sub_dirs = options.test_path
 
     else:
-        sub_dirs = [
-            x[0] for x in os.walk(project_root)
-            if x[0] not in ["/.", "Godeps", "vendor"]
-            ]
+        get_test_packages(project_root)
 
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
