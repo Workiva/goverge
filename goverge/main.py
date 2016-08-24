@@ -106,7 +106,7 @@ def goverge(options):
         sub_dirs = options.test_path
 
     else:
-        get_test_packages(project_root)
+        sub_dirs = get_test_packages(project_root)
 
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
