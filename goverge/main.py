@@ -60,10 +60,11 @@ def get_project_package(project_root, project_import):
 
 def get_test_packages(project_root):
     """
+    Get the list of packages in the project
     :type project_root: string
     :param project_root: The location of the project root
     :rtype: List
-    :return: The list of to run coverage on
+    :return: The list of packages to run coverage on
     """
     return [
         x[0] for x in os.walk(project_root)
