@@ -24,6 +24,22 @@ from unittest import TestCase
 from goverge import main
 
 
+class TestPackageTestCase(TestCase):
+
+    @patch('goverge.main.os.walk')
+    def test_get_test_packages(self, mock_os_walk):
+        mock_os_walk.return_value = [
+            ("/Godeps/_workspace/src/foo/", ('',), ("foo")),
+            ("/vendor/foo/", ('',), ("foo")),
+            ("/./foo", ('',), ("foo")),
+            ("/foo/bar", ('',), ("foo"))
+        ]
+
+        test_packages = main.get_test_packages("/foo/bar")
+        self.assertEqual(test_packages, ["/foo/bar"])
+        mock_os_walk.assert_called_once_with("/foo/bar")
+
+
 class MainTestCase(TestCase):
 
     @patch('goverge.main.goverge')
