@@ -99,7 +99,7 @@ class TestPackageDeps(unittest.TestCase):
     def test_package_deps(self, mock_communicate, mock_popen):
         mock_popen.return_value = Popen
         mock_communicate.return_value = (
-            '[foo/bar/a bar/baz foo/bar/b foo/bar/c]', None)
+            '[foo/bar/a bar/baz foo/bar/b foo/bar/c foo/bar/vendor/baz]', None)
 
         deps = get_package_deps("foo/bar", ".", "foo")
 

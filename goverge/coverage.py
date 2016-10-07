@@ -205,7 +205,8 @@ def get_package_deps(project_package, test_path, tag):
     package_deps = [
         package.replace("]", "").replace("[", "").replace("'", "")
         for package in list(set(output))
-        if project_package.split("\n")[0] in package]
+        if project_package.split("\n")[0] in package and
+        project_package.split("\n")[0]+"/vendor" not in package]
 
     package_deps.append(".")
 
