@@ -204,7 +204,9 @@ def get_package_deps(project_package, test_path, tag):
     project_path = project_package.split("\n")[0]
     package_deps = []
     for package in list(set(output)):
-        if project_path in package and project_path + "/vendor" not in package:
+        # Check that the dependency is part of the local project under test and
+        # not part of the vendor dependencies
+        if project_path + "/vendor" not in package and project_path in package:
             p = package.replace("]", "").replace("[", "").replace("'", "")
             package_deps.append(p)
 
