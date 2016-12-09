@@ -58,18 +58,28 @@ def get_project_package(project_root, project_import):
     return project_import.replace("'", "")
 
 
-def get_test_packages(project_root):
+def get_test_packages(project_root, ignore):
     """
     Get the list of packages in the project
     :type project_root: string
     :param project_root: The location of the project root
     :rtype: List
+    :param ignore: List of directories to ignore
+    :rtype: List
     :return: The list of packages to run coverage on
     """
-    return [
-        x[0] for x in os.walk(project_root)
-        if not any(word in x[0] for word in ["/.", "Godeps", "vendor"])
-        ]
+    ignores = ["/.", "Godeps", "vendor"]
+    if ignore is not None:
+        ignores.extend(ignore)
+    directories = [project_root]
+    for root, subdirs, files in os.walk(project_root):
+        for name in subdirs:
+            print "DIR: " + str(os.path.join(root, name))
+            if str(os.path.join(root, name)).startswith(project_root) and name not in ignores and os.path.join(root, name) != project_root:
+                print "ACCEPTED DIR" + str(os.path.join(root, name))
+                directories.append(os.path.join(root, name))
+    print "RETURNING: " + str(directories)
+    return directories
 
 
 def main():
@@ -106,12 +116,12 @@ def goverge(options):
         sub_dirs = options.test_path
 
     else:
-        sub_dirs = get_test_packages(project_root)
+        sub_dirs = get_test_packages(project_root, options.ignore)
 
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
         options.xml, options.xml_dir, options.race, options.tag,
-        int(options.threads), options.go_flags)
+        int(options.threads), options.go_flags, options.ignore)
 
     reports = get_coverage_reports("./reports")
 
@@ -229,6 +239,14 @@ def _parse_args(argv):
         action='store',
         default=os.getcwd() + "/xml_reports/",
         help="The location to put the xml reports that are generated."
+    )
+
+    p.add_argument(
+        '--ignore',
+        nargs='+',
+        action='store',
+        default=None,
+        help="List of directories to ignore"
     )
 
     return p.parse_args(argv)

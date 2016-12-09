@@ -41,7 +41,7 @@ class TestCoverage(unittest.TestCase):
 
         generate_package_coverage(
             "test_path", "project_package", "test_package", "project_root",
-            True, True, False, "foo/", True, "foo", ["-x", "-timeout=5m"])
+            True, True, False, "foo/", True, "foo", ["-x", "-timeout=5m"], [])
 
         mock_deps.assert_called_once_with(
             "project_package", "test_path", "foo")
@@ -59,7 +59,7 @@ class TestCoverage(unittest.TestCase):
 
         generate_package_coverage(
             "test_path", "project_package", "test_package", "project_root",
-            False, False, False, "foo/", False, None, None)
+            False, False, False, "foo/", False, None, None, None)
 
         mock_deps.assert_called_once_with(
             "project_package", "test_path", None)
@@ -76,7 +76,7 @@ class TestCoverage(unittest.TestCase):
 
         generate_package_coverage(
             "test_path", "project_package", "test_package", "project_root",
-            False, False, True, "foo/", False, None, None)
+            False, False, True, "foo/", False, None, None, None)
 
         mock_deps.assert_called_once_with(
             "project_package", "test_path", None)
