@@ -75,10 +75,10 @@ def get_test_packages(project_root, ignore):
     for root, subdirs, files in os.walk(project_root):
         for name in subdirs:
             print "DIR: " + str(os.path.join(root, name))
-            if str(os.path.join(root, name)).startswith(project_root) and name not in ignores and os.path.join(root, name) != project_root:
-                print "ACCEPTED DIR" + str(os.path.join(root, name))
+            full_path = os.path.join(root, name)
+            if str(os.path.join(root, name)).startswith(project_root) and full_path not in ignores and \
+                            name not in ignores and full_path != project_root:
                 directories.append(os.path.join(root, name))
-    print "RETURNING: " + str(directories)
     return directories
 
 
