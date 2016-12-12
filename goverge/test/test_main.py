@@ -33,12 +33,13 @@ class TestPackageTestCase(TestCase):
             ("/vendor/foo/", ('',), ("foo")),
             ("/./foo", ('',), ("foo")),
             ("/foo/bar/", ('',), ("foo")),
+            ("/foo/bar/baz", ('',), ("foo")),
             ("/foo/bar/ignore", ('',), ("foo"))
         ]
 
         test_packages = main.get_test_packages(project_root="/foo/bar/",
                                                ignore=["/foo/bar/ignore/"])
-        self.assertEqual(test_packages, ["/foo/bar/"])
+        self.assertEqual(test_packages, ["/foo/bar/", "/foo/bar/baz/"])
         mock_os_walk.assert_called_once_with("/foo/bar/")
 
 
