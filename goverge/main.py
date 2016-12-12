@@ -72,7 +72,7 @@ def get_test_packages(project_root, ignore):
     if ignore is not None:
         ignores.extend(ignore)
     directories = []
-    for root, subdirs, file in os.walk(project_root):
+    for root, subdirs, file_names in os.walk(project_root):
         if not any(subdir in root for subdir in ignores):
             directories.append(root)
 
