@@ -36,7 +36,8 @@ class TestPackageTestCase(TestCase):
             ("/foo/bar/ignore", ('',), ("foo"))
         ]
 
-        test_packages = main.get_test_packages(project_root="/foo/bar/", ignore=["/foo/bar/ignore/"])
+        test_packages = main.get_test_packages(project_root="/foo/bar/",
+                                               ignore=["/foo/bar/ignore/"])
         self.assertEqual(test_packages, ["/foo/bar/"])
         mock_os_walk.assert_called_once_with("/foo/bar/")
 
