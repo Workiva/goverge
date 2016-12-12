@@ -86,7 +86,7 @@ class GovergeTestCase(TestCase):
         assert mock_cwd.called
         gen_cov.assert_called_once_with(
             ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
-            False, '/foo/bar/xml_reports/', True, None, 4, None, None)
+            False, '/foo/bar/xml_reports/', True, None, 4, None)
         assert mock_comm.called
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
