@@ -71,13 +71,11 @@ def get_test_packages(project_root, ignore):
     ignores = ["/.", "Godeps", "vendor"]
     if ignore is not None:
         ignores.extend(ignore)
-    directories = [project_root]
-    for root, subdirs, files in os.walk(project_root):
-        for subdir in subdirs:
-            full_path = os.path.join(root, subdir)
-            if str(full_path).startswith(project_root) and full_path not in ignores and \
-                    subdir not in ignores and full_path != project_root:
-                directories.append(os.path.join(root, subdir))
+    directories = []
+    for root, subdirs, file in os.walk(project_root):
+        if not any(subdir in root for subdir in ignores):
+            directories.append(root)
+
     return directories
 
 
@@ -120,7 +118,7 @@ def goverge(options):
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
         options.xml, options.xml_dir, options.race, options.tag,
-        int(options.threads), options.go_flags, options.ignore)
+        int(options.threads), options.go_flags)
 
     reports = get_coverage_reports("./reports")
 
