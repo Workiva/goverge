@@ -35,8 +35,8 @@ def generate_coverage(
         race, tag, max_threads, go_flags):
     """ Generate the coverage for a list of packages.
 
-    :type package: list
-    :param package: Packages to generate coverage for
+    :type packages: list
+    :param packages: Packages to generate coverage for
     :type project_package: string
     :param project_package: The package name of the base of the package
     :type project_root: string

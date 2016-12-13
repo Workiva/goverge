@@ -58,18 +58,25 @@ def get_project_package(project_root, project_import):
     return project_import.replace("'", "")
 
 
-def get_test_packages(project_root):
+def get_test_packages(project_root, ignore):
     """
     Get the list of packages in the project
     :type project_root: string
     :param project_root: The location of the project root
     :rtype: List
+    :param ignore: List of directories to ignore
+    :rtype: List
     :return: The list of packages to run coverage on
     """
-    return [
-        x[0] for x in os.walk(project_root)
-        if not any(word in x[0] for word in ["/.", "Godeps", "vendor"])
-        ]
+    ignores = ["/.", "Godeps", "vendor"]
+    if ignore is not None:
+        ignores.extend(ignore)
+    directories = []
+    for root, subdirs, file_names in os.walk(project_root):
+        if not any(subdir in root for subdir in ignores):
+            directories.append(root)
+
+    return directories
 
 
 def main():
@@ -106,7 +113,7 @@ def goverge(options):
         sub_dirs = options.test_path
 
     else:
-        sub_dirs = get_test_packages(project_root)
+        sub_dirs = get_test_packages(project_root, options.ignore)
 
     generate_coverage(
         sub_dirs, project_package, project_root, options.godep, options.short,
@@ -229,6 +236,14 @@ def _parse_args(argv):
         action='store',
         default=os.getcwd() + "/xml_reports/",
         help="The location to put the xml reports that are generated."
+    )
+
+    p.add_argument(
+        '--ignore',
+        nargs='+',
+        action='store',
+        default=None,
+        help="List of directories to ignore"
     )
 
     return p.parse_args(argv)

@@ -29,15 +29,18 @@ class TestPackageTestCase(TestCase):
     @patch('goverge.main.os.walk')
     def test_get_test_packages(self, mock_os_walk):
         mock_os_walk.return_value = [
-            ("/Godeps/_workspace/src/foo/", ('',), ("foo")),
-            ("/vendor/foo/", ('',), ("foo")),
+            ("/foo/bar/Godeps", ('',), ("foo")),
+            ("/foo/bar/vendor/", ('',), ("foo")),
             ("/./foo", ('',), ("foo")),
-            ("/foo/bar", ('',), ("foo"))
+            ("/foo/bar/", ('',), ("foo")),
+            ("/foo/bar/baz", ('',), ("foo")),
+            ("/foo/bar/ignore", ('',), ("foo")),
         ]
 
-        test_packages = main.get_test_packages("/foo/bar")
-        self.assertEqual(test_packages, ["/foo/bar"])
-        mock_os_walk.assert_called_once_with("/foo/bar")
+        test_packages = main.get_test_packages(project_root="/foo/bar/",
+                                               ignore=["/foo/bar/ignore"])
+        self.assertEqual(test_packages, ["/foo/bar/", "/foo/bar/baz"])
+        mock_os_walk.assert_called_once_with("/foo/bar/")
 
 
 class MainTestCase(TestCase):
@@ -105,7 +108,8 @@ class parse_argsTestCase(TestCase):
             'test_path': None,
             'threads': 4,
             'xml': False,
-            'xml_dir': '/foo/bar/xml_reports/'
+            'xml_dir': '/foo/bar/xml_reports/',
+            'ignore': None
         }
         self.assertEqual(expected, vars(args))
 
