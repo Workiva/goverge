@@ -40,7 +40,7 @@ class TestCoverage(unittest.TestCase):
         mock_deps.return_value = ["foo/bar", "foo/bar/baz", "."]
 
         generate_package_coverage(
-            "test_path", "project_package", "test_package", "project_root",
+            "test_path", "project_package", "test_package", "project_root", 'count',
             True, True, False, "foo/", True, "foo", ["-x", "-timeout=5m"])
 
         mock_deps.assert_called_once_with(
@@ -58,7 +58,7 @@ class TestCoverage(unittest.TestCase):
         mock_deps.return_value = ["foo/bar", "foo/bar/baz", "."]
 
         generate_package_coverage(
-            "test_path", "project_package", "test_package", "project_root",
+            "test_path", "project_package", "test_package", "project_root", 'count',
             False, False, False, "foo/", False, None, None)
 
         mock_deps.assert_called_once_with(
@@ -75,7 +75,7 @@ class TestCoverage(unittest.TestCase):
         mock_deps.return_value = ["foo/bar", "foo/bar/baz", "."]
 
         generate_package_coverage(
-            "test_path", "project_package", "test_package", "project_root",
+            "test_path", "project_package", "test_package", "project_root", 'count',
             False, False, True, "foo/", False, None, None)
 
         mock_deps.assert_called_once_with(

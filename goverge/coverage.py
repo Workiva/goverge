@@ -31,7 +31,7 @@ def check_failed(return_code):
 
 
 def generate_coverage(
-        packages, project_package, project_root, godep, short, xml, xml_dir,
+        packages, project_package, project_root, covermode, godep, short, xml, xml_dir,
         race, tag, max_threads, go_flags):
     """ Generate the coverage for a list of packages.
 
@@ -74,6 +74,7 @@ def generate_coverage(
                 project_package,
                 package.replace("/", "_").replace(".", ""),
                 project_root,
+                covermode,
                 godep,
                 short,
                 xml,
@@ -91,7 +92,7 @@ def generate_coverage(
 
 
 def generate_package_coverage(
-        test_path, project_package, test_package, project_root, godep, short,
+        test_path, project_package, test_package, project_root, covermode, godep, short,
         xml, xml_dir, race, tag, go_flags):
     """ Generates the coverage report for a package.
 
@@ -104,6 +105,8 @@ def generate_package_coverage(
     :type project_root: string
     :param project_root: The project root path
     :type godep: bool
+    :param covermode: The covermode setting to use
+    :type covermode: string
     :param godep: If godep should be used when running tests
     :type xml: bool
     :param xml: If xml test output should be created
@@ -121,7 +124,7 @@ def generate_package_coverage(
     package_deps = get_package_deps(project_package, test_path, tag)
 
     options = [
-        "go", "test", '-covermode=count',
+        "go", "test", '-covermode=' + covermode,
         u"-coverprofile={0}/reports/{1}.txt".format(
             project_root, test_package),
         u"-coverpkg={0}".format(",".join(package_deps))]

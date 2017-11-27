@@ -78,14 +78,14 @@ class GovergeTestCase(TestCase):
 
         mock_popen.return_value = Popen
         args = main._parse_args([
-            '--godep', '--short', '--race', '--test_path=/foo/bar',
+            '--covermode=atomic', '--godep', '--short', '--race', '--test_path=/foo/bar',
             "--project_import='github.com/Workiva/goverge'", '--html'])
         main.goverge(args)
 
         mock_mkdir.assert_called_once_with("./reports")
         assert mock_cwd.called
         gen_cov.assert_called_once_with(
-            ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", True, True,
+            ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", 'atomic', True, True,
             False, '/foo/bar/xml_reports/', True, None, 4, None)
         assert mock_comm.called
         mock_popen.assert_called_once_with(
@@ -99,6 +99,7 @@ class parse_argsTestCase(TestCase):
         args = main._parse_args([])
         expected = {
             'go_flags': None,
+            'covermode': 'count',
             'godep': False,
             'html': False,
             'project_import': None,
@@ -116,6 +117,11 @@ class parse_argsTestCase(TestCase):
     def test_custom(self):
         args = main._parse_args(['--go_flags=-x', '--go_flags=-timeout=5m'])
         self.assertEqual(["-x", "-timeout=5m"], vars(args).get('go_flags'))
+
+    def test_covermode(self):
+        args = main._parse_args(['--covermode=atomic'])
+        print vars(args)
+        self.assertEqual(vars(args).get('covermode'), 'atomic')
 
     def test_godep(self):
         args = main._parse_args(['--godep'])
