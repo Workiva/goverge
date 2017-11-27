@@ -3,3 +3,4 @@
 bilobac
 goverge.egg-info
 nosetests.xml
+*.pyc
