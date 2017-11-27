@@ -78,15 +78,17 @@ class GovergeTestCase(TestCase):
 
         mock_popen.return_value = Popen
         args = main._parse_args([
-            '--covermode=atomic', '--godep', '--short', '--race', '--test_path=/foo/bar',
+            '--covermode=atomic', '--godep', '--short', '--race',
+            '--test_path=/foo/bar',
             "--project_import='github.com/Workiva/goverge'", '--html'])
         main.goverge(args)
 
         mock_mkdir.assert_called_once_with("./reports")
         assert mock_cwd.called
         gen_cov.assert_called_once_with(
-            ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar", 'atomic', True, True,
-            False, '/foo/bar/xml_reports/', True, None, 4, None)
+            ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar",
+            'atomic', True, True, False, '/foo/bar/xml_reports/',
+            True, None, 4, None)
         assert mock_comm.called
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
@@ -120,7 +122,6 @@ class parse_argsTestCase(TestCase):
 
     def test_covermode(self):
         args = main._parse_args(['--covermode=atomic'])
-        print vars(args)
         self.assertEqual(vars(args).get('covermode'), 'atomic')
 
     def test_godep(self):

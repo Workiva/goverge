@@ -31,8 +31,8 @@ def check_failed(return_code):
 
 
 def generate_coverage(
-        packages, project_package, project_root, covermode, godep, short, xml, xml_dir,
-        race, tag, max_threads, go_flags):
+        packages, project_package, project_root, covermode, godep, short,
+        xml, xml_dir, race, tag, max_threads, go_flags):
     """ Generate the coverage for a list of packages.
 
     :type packages: list
@@ -92,8 +92,8 @@ def generate_coverage(
 
 
 def generate_package_coverage(
-        test_path, project_package, test_package, project_root, covermode, godep, short,
-        xml, xml_dir, race, tag, go_flags):
+        test_path, project_package, test_package, project_root, covermode,
+        godep, short, xml, xml_dir, race, tag, go_flags):
     """ Generates the coverage report for a package.
 
     :type test_path: string

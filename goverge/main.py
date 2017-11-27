@@ -116,9 +116,9 @@ def goverge(options):
         sub_dirs = get_test_packages(project_root, options.ignore)
 
     generate_coverage(
-        sub_dirs, project_package, project_root, options.covermode, options.godep, options.short,
-        options.xml, options.xml_dir, options.race, options.tag,
-        int(options.threads), options.go_flags)
+        sub_dirs, project_package, project_root, options.covermode,
+        options.godep, options.short, options.xml, options.xml_dir,
+        options.race, options.tag, int(options.threads), options.go_flags)
 
     reports = get_coverage_reports("./reports")
 
