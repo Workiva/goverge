@@ -28,7 +28,6 @@ class TestCheckFailed(unittest.TestCase):
     @patch('goverge.coverage.os._exit')
     def test_check_failed(self, mock_exit):
         check_failed(1)
-        print(coverage._failed)
         self.assertTrue(coverage._failed)
 
 
