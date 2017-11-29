@@ -20,6 +20,8 @@ import subprocess
 import sys
 import threading
 
+_failed = False
+
 
 def check_failed(return_code):
     """Check if the test run failed and exit with the correct code if it did.
@@ -27,7 +29,9 @@ def check_failed(return_code):
     :param return_code: The return code of a test run
     """
     if return_code != 0:
-        os._exit(return_code)
+        global _failed
+        _failed = True
+        print("This is FAILED's value: {}".format(_failed))
 
 
 def generate_coverage(
@@ -89,6 +93,8 @@ def generate_coverage(
 
         else:
             threads = [thread for thread in threads if thread.is_alive()]
+    if _failed:
+        os._exit(1)
 
 
 def generate_package_coverage(

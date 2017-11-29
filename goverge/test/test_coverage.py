@@ -21,14 +21,15 @@ import unittest
 from goverge.coverage import check_failed
 from goverge.coverage import generate_package_coverage
 from goverge.coverage import get_package_deps
+from goverge import coverage
 
 
 class TestCheckFailed(unittest.TestCase):
-
     @patch('goverge.coverage.os._exit')
     def test_check_failed(self, mock_exit):
         check_failed(1)
-        mock_exit.assert_called_with(1)
+        print(coverage._failed)
+        self.assertTrue(coverage._failed)
 
 
 @patch('goverge.coverage.get_package_deps')
