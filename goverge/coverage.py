@@ -31,7 +31,6 @@ def check_failed(return_code):
     if return_code != 0:
         global _failed
         _failed = True
-        print("This is FAILED's value: {}".format(_failed))
 
 
 def generate_coverage(
