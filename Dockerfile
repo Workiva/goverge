@@ -11,3 +11,4 @@ RUN pip install -r requirements_dev.txt
 RUN mkdir /audit/
 RUN pip freeze | tee /audit/pip.lock
 
+FROM scratch
