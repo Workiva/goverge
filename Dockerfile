@@ -9,6 +9,6 @@ RUN pip install -r requirements_dev.txt
 
 # Audit
 RUN mkdir /audit/
-RUN pip freeze | tee /audit/pip.lock
+RUN pip freeze > /audit/pip.lock
 
 FROM scratch
