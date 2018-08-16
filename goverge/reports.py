@@ -74,22 +74,17 @@ def compile_reports(reports):
                 else:
                     package_reports[line_parts[0]] = line
 
-            print "{0} was processed in: {1} seconds".format(
-                report, time.clock() - report_start_time)
-    print "Time to process all reports: {0}".format(
-        time.clock() - time_at_beginning)
-    write_coverage_to_file(package_reports.values())
+            print("{0} was processed in: {1} seconds".format(
+                report, time.clock() - report_start_time))
+    print("Time to process all reports: {0}".format(
+        time.clock() - time_at_beginning))
+    write_coverage_to_file(list(package_reports.values()))
 
 
-def write_coverage_to_file(coverage_reports):
-    """
-    Write the coverage report lines to the coverage file.
-
-    :type coverage_reports: list
-    :param coverage_reports: Coverage report lines
-    """
+def write_coverage_to_file(coverage_reports: list):
+    """Write the coverage report lines to the coverage file."""
 
     with open("test_coverage.txt", "w") as coverage_file:
         coverage_file.write("mode: set\n")
         coverage_file.write("".join(coverage_reports))
-    print "Coverage file created: test_coverage.txt"
+    print("Coverage file created: test_coverage.txt")
