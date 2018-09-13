@@ -21,7 +21,6 @@ import sys
 from mock import patch
 from mock import Mock
 from subprocess import PIPE
-from subprocess import Popen
 from unittest import TestCase
 
 from goverge import main
@@ -37,7 +36,23 @@ class MainTestCase(TestCase):
         mock_config.return_value = config
         sys.argv = ["goverge", "--godep"]
         main.main()
-        mock_config.assert_called_once_with(argparse.Namespace(covermode='count', go_flags=None, godep=True, html=False, ignore=None, project_import=None, race=False, short=False, tag=None, test_path=None, threads=4, xml=False, xml_dir='/Users/wesleybalvanz/go/src/github.com/Workiva/goverge/xml_reports/'))
+        mock_config.assert_called_once_with(
+            argparse.Namespace(
+                covermode='count',
+                go_flags=None,
+                godep=True,
+                html=False,
+                ignore=None,
+                project_import=None,
+                race=False,
+                short=False,
+                tag=None,
+                test_path=None,
+                threads=4,
+                xml=False,
+                xml_dir='/Users/wesleybalvanz/go/src/github.com/Workiva/goverge/xml_reports/'
+            )
+        )
         mock_goverge.assert_called_once_with(config)
         self.assertEquals(os.environ.get("GORACE"), "halt_on_error=1")
 

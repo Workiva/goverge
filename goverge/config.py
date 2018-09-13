@@ -17,7 +17,6 @@ limitations under the License.
 import argparse
 import os
 
-from typing import Any
 from goverge.packages import get_project_package
 from goverge.packages import get_sub_packages
 
@@ -25,21 +24,21 @@ from goverge.packages import get_sub_packages
 class CoverageConfig:
     def __init__(
             self,
-            cover_mode: str = None,
-            go_flags: list = None,
-            godep: bool = None,
-            html: bool = None,
-            ignore_list: list = None,
-            project_import: str = None,
-            project_package: str = None,
-            project_root: str = None,
-            race: bool = None,
-            short: bool = None,
-            sub_packages: list = None,
-            tag: str = None,
-            threads: int = 4,
-            xml: bool = None,
-            xml_dir: str = None,
+            cover_mode: str=None,
+            go_flags: list=None,
+            godep: bool=None,
+            html: bool=None,
+            ignore_list: list=None,
+            project_import: str=None,
+            project_package: str=None,
+            project_root: str=None,
+            race: bool=None,
+            short: bool=None,
+            sub_packages: list=None,
+            tag: str=None,
+            threads: int=4,
+            xml: bool=None,
+            xml_dir: str=None,
     ):
         """
         :param cover_mode: The coverage mode to use can be set, count or
