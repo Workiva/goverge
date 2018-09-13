@@ -37,23 +37,27 @@ def check_failed(return_code):
 
 def generate_coverage(config: CoverageConfig):
     """ Generate the coverage for a list of packages."""
-
     jobs = []
-    for package in config.sub_packages:
+    while jobs or config.sub_packages:
+        if len(jobs) < config.threads and config.sub_packages:
+            package = config.sub_packages.pop()
 
-        # If there isn't a test file in the package we skip it.
-        if not glob.glob(u"{0}/*_test.go".format(package)):
-            continue
-        process = multiprocessing.Process(target=generate_package_coverage, args=(
-            package,
-            package.replace("/", "_").replace(".", ""),
-            config
-        ))
-        process.start()
-        jobs.append(process)
+            # If there isn't a test file in the package we skip it.
+            if not glob.glob(u"{0}/*_test.go".format(package)):
+                continue
+            process = multiprocessing.Process(target=generate_package_coverage, args=(
+                package,
+                package.replace("/", "_").replace(".", ""),
+                config
+            ))
+            process.start()
+            jobs.append(process)
 
-    for job in jobs:
-        job.join()
+        else:
+            for job in jobs:
+                job.join()
+                print("Jobs: {}".format(jobs))
+            jobs = []
     if _failed:
         os._exit(1)
 
@@ -70,10 +74,7 @@ def generate_package_coverage(
     """
 
     # Get the dependencies of the package we are testing
-    package_deps = get_package_deps(config.project_package, config.test_path, config.tag)
-    # print(test_package)
-    # print(package_deps)
-    # print(config.project_root)
+    package_deps = get_package_deps(config.project_package, test_path, config.tag)
     options = [
         u"go", u"test", u'-covermode=' + config.cover_mode,
         u"-coverprofile={0}/reports/{1}.txt".format(

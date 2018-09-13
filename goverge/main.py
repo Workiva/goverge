@@ -18,8 +18,7 @@ limitations under the License.
 import argparse
 import os
 import shutil
-from subprocess import PIPE
-from subprocess import Popen
+import subprocess
 import sys
 
 from goverge._pkg_meta import version
@@ -71,9 +70,9 @@ def goverge(config: CoverageConfig):
     compile_reports(reports)
 
     if config.html:
-        Popen(
+        subprocess.Popen(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
-            stdout=PIPE,
+            stdout=subprocess.PIPE,
             cwd=config.project_root
         ).communicate()
 

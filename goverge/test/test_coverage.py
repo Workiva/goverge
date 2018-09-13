@@ -14,72 +14,102 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import mock
 from mock import patch
 from subprocess import Popen
 import unittest
 
+from goverge.config import CoverageConfig
+from goverge import coverage
 from goverge.coverage import check_failed
 from goverge.coverage import generate_package_coverage
 from goverge.coverage import get_package_deps
-from goverge import coverage
 
 
 class TestCheckFailed(unittest.TestCase):
     @patch('goverge.coverage.os._exit')
     def test_check_failed(self, mock_exit):
         check_failed(1)
+        print("Failed inside of the test: {}".format(coverage._failed))
         self.assertTrue(coverage._failed)
 
 
 @patch('goverge.coverage.get_package_deps')
 class TestCoverage(unittest.TestCase):
 
-    @patch('goverge.coverage.subprocess.call', return_value=0)
+    @patch('goverge.coverage.subprocess.Popen')
     def test_generate_package_coverage_godep_short_race(
-            self, mock_call, mock_deps):
+            self, mock_subproc_popen, mock_deps):
+        process_mock = mock.Mock()
+        attrs = {'communicate.return_value': ('output', 'error')}
+        process_mock.configure_mock(**attrs)
+        mock_subproc_popen.return_value = process_mock
         mock_deps.return_value = ["foo/bar", "foo/bar/baz", "."]
-
-        generate_package_coverage(
-            "test_path", "project_package", "test_package",
-            "project_root", 'count', True, True, False, "foo/", True,
-            "foo", ["-x", "-timeout=5m"])
+        config = CoverageConfig(
+            cover_mode="count",
+            project_root="project_root",
+            project_package="project_package",
+            tag="foo"
+        )
+        generate_package_coverage("test_path", "test_package", config)
 
         mock_deps.assert_called_once_with(
             "project_package", "test_path", "foo")
 
-        mock_call.assert_called_once_with([
-            "godep", "go", "test", '-covermode=count',
-            u"-coverprofile=project_root/reports/test_package.txt",
-            u"-coverpkg=foo/bar,foo/bar/baz,.", "-short", "-race", "-tags=foo",
-            "-x", "-timeout=5m"
-        ], cwd="test_path")
+        mock_subproc_popen.assert_called_once_with(
+            [
+                'go',
+                'test',
+                '-covermode=count',
+                '-coverprofile=project_root/reports/test_package.txt',
+                '-coverpkg=foo/bar,foo/bar/baz,.',
+                '-tags=foo',
+                '-v'
+            ],
+            cwd='test_path',
+            stdout=-1,
+            stderr=-1
+        )
 
-    @patch('goverge.coverage.subprocess.call', return_value=0)
-    def test_generate_coverage_no_godep_short_race(self, mock_call, mock_deps):
+    @patch('goverge.coverage.subprocess.Popen')
+    def test_generate_coverage_no_godep_short_race(self, mock_subproc_popen, mock_deps):
+        process_mock = mock.Mock()
+        attrs = {'communicate.return_value': ('output', 'error')}
+        process_mock.configure_mock(**attrs)
+        mock_subproc_popen.return_value = process_mock
         mock_deps.return_value = ["foo/bar", "foo/bar/baz", "."]
-
-        generate_package_coverage(
-            "test_path", "project_package", "test_package",
-            "project_root", 'count', False, False, False, "foo/",
-            False, None, None)
+        config = CoverageConfig(
+            cover_mode="count",
+            project_root="project_root",
+            project_package="project_package"
+        )
+        generate_package_coverage("test_path", "test_package", config)
 
         mock_deps.assert_called_once_with(
             "project_package", "test_path", None)
 
-        mock_call.assert_called_once_with([
-            "go", "test", '-covermode=count',
-            u"-coverprofile=project_root/reports/test_package.txt",
-            u"-coverpkg=foo/bar,foo/bar/baz,."
-        ], cwd="test_path")
+        mock_subproc_popen.assert_called_once_with(
+            [
+                'go',
+                'test',
+                '-covermode=count',
+                '-coverprofile=project_root/reports/test_package.txt',
+                '-coverpkg=foo/bar,foo/bar/baz,.',
+                '-v'
+            ],
+            cwd='test_path',
+            stdout=-1,
+            stderr=-1
+        )
 
     @patch('goverge.coverage.generate_xml')
     def test_generate_coverage_xml(self, mock_gen_xml, mock_deps):
         mock_deps.return_value = ["foo/bar", "foo/bar/baz", "."]
-
+        config = CoverageConfig(cover_mode="count",
+                                project_root="project_root",
+                                xml=True, xml_dir="foo/", project_package="project_package")
         generate_package_coverage(
-            "test_path", "project_package", "test_package",
-            "project_root", 'count', False, False, True, "foo/",
-            False, None, None)
+            "test_path", "test_package", config)
 
         mock_deps.assert_called_once_with(
             "project_package", "test_path", None)
@@ -102,9 +132,9 @@ class TestPackageDeps(unittest.TestCase):
     def test_package_deps(self, mock_communicate, mock_popen):
         mock_popen.return_value = Popen
         mock_communicate.return_value = (
-            '[foo/bar/a bar/baz foo/bar/b foo/bar/c foo/bar/vendor/baz]', None)
+            b'[foo/bar/a bar/baz foo/bar/b foo/bar/c foo/bar/vendor/baz]', None)
 
-        deps = get_package_deps("foo/bar", ".", "foo")
+        deps = get_package_deps("foo/bar", ".", [b"foo"])
 
         mock_communicate.assert_called_once()
 

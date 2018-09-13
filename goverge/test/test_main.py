@@ -14,42 +14,31 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from mock import patch
+import argparse
 import os
+import sys
+
+from mock import patch
+from mock import Mock
 from subprocess import PIPE
 from subprocess import Popen
-import sys
 from unittest import TestCase
 
 from goverge import main
-
-
-class TestPackageTestCase(TestCase):
-
-    @patch('goverge.main.os.walk')
-    def test_get_test_packages(self, mock_os_walk):
-        mock_os_walk.return_value = [
-            ("/foo/bar/Godeps", ('',), ("foo")),
-            ("/foo/bar/vendor/", ('',), ("foo")),
-            ("/./foo", ('',), ("foo")),
-            ("/foo/bar/", ('',), ("foo")),
-            ("/foo/bar/baz", ('',), ("foo")),
-            ("/foo/bar/ignore", ('',), ("foo")),
-        ]
-
-        test_packages = main.get_test_packages(project_root="/foo/bar/",
-                                               ignore=["/foo/bar/ignore"])
-        self.assertEqual(test_packages, ["/foo/bar/", "/foo/bar/baz"])
-        mock_os_walk.assert_called_once_with("/foo/bar/")
+from goverge.config import CoverageConfig
 
 
 class MainTestCase(TestCase):
 
     @patch('goverge.main.goverge')
-    def test_main(self, mock_goverge):
+    @patch('goverge.main.create_config')
+    def test_main(self, mock_config, mock_goverge):
+        config = CoverageConfig()
+        mock_config.return_value = config
         sys.argv = ["goverge", "--godep"]
         main.main()
-        mock_goverge.assert_called_once_with(main._parse_args(['--godep']))
+        mock_config.assert_called_once_with(argparse.Namespace(covermode='count', go_flags=None, godep=True, html=False, ignore=None, project_import=None, race=False, short=False, tag=None, test_path=None, threads=4, xml=False, xml_dir='/Users/wesleybalvanz/go/src/github.com/Workiva/goverge/xml_reports/'))
+        mock_goverge.assert_called_once_with(config)
         self.assertEquals(os.environ.get("GORACE"), "halt_on_error=1")
 
     @patch('goverge.main.shutil.rmtree')
@@ -57,39 +46,22 @@ class MainTestCase(TestCase):
         main.delete_folder("foo/")
         mock_rmtree.assert_called_once_with("foo/")
 
-    @patch('goverge.main.Popen')
-    @patch('goverge.main.Popen.communicate')
-    def test_get_project_package(self, mock_comm, mock_popen):
-        mock_popen.return_value = Popen
-        mock_comm.return_value = "'foo/bar'", ""
-        package = main.get_project_package("/test/foo/bar", "")
-        self.assertEquals(package, "foo/bar")
 
-
-@patch('goverge.main.Popen')
-@patch('goverge.main.Popen.communicate')
+@patch('goverge.main.subprocess.Popen')
 @patch('goverge.main.generate_coverage')
-@patch('goverge.main.os.getcwd', return_value="/foo/bar")
 @patch('goverge.main.os.mkdir')
 class GovergeTestCase(TestCase):
-
     def test_short_race_godep_path_html(
-            self, mock_mkdir, mock_cwd, gen_cov, mock_comm, mock_popen):
-
-        mock_popen.return_value = Popen
-        args = main._parse_args([
-            '--covermode=atomic', '--godep', '--short', '--race',
-            '--test_path=/foo/bar',
-            "--project_import='github.com/Workiva/goverge'", '--html'])
-        main.goverge(args)
+            self, mock_mkdir, gen_cov, mock_popen):
+        process_mock = Mock()
+        attrs = {'communicate.return_value': ('output', 'error')}
+        process_mock.configure_mock(**attrs)
+        mock_popen.return_value = process_mock
+        config = CoverageConfig(html=True, project_root="/foo/bar")
+        main.goverge(config)
 
         mock_mkdir.assert_called_once_with("./reports")
-        assert mock_cwd.called
-        gen_cov.assert_called_once_with(
-            ['/foo/bar'], "github.com/Workiva/goverge", "/foo/bar",
-            'atomic', True, True, False, '/foo/bar/xml_reports/',
-            True, None, 4, None)
-        assert mock_comm.called
+        gen_cov.assert_called_once_with(config)
         mock_popen.assert_called_once_with(
             ["go", "tool", "cover", "--html=test_coverage.txt"],
             stdout=PIPE, cwd="/foo/bar")
@@ -117,61 +89,35 @@ class parse_argsTestCase(TestCase):
         self.assertEqual(expected, vars(args))
 
     def test_custom(self):
-        args = main._parse_args(['--go_flags=-x', '--go_flags=-timeout=5m'])
-        self.assertEqual(["-x", "-timeout=5m"], vars(args).get('go_flags'))
-
-    def test_covermode(self):
-        args = main._parse_args(['--covermode=atomic'])
-        self.assertEqual(vars(args).get('covermode'), 'atomic')
-
-    def test_godep(self):
-        args = main._parse_args(['--godep'])
-        self.assertTrue(vars(args).get('godep'))
-
-    def test_html(self):
-        args = main._parse_args(["--html"])
-        self.assertTrue(vars(args).get('html'))
-
-    def test_path(self):
         args = main._parse_args([
+            '--go_flags=-x',
+            '--go_flags=-timeout=5m',
+            '--covermode=atomic',
+            '--godep',
+            "--html",
             "--test_path=/foo/bar",
-            "--test_path=/bar/foo"
+            "--test_path=/bar/foo",
+            "--project_import=github.com/Workiva/goverge",
+            "--race",
+            '--short',
+            "--tag=foo",
+            "--threads=12",
+            "--xml",
+            "--xml_dir=/foo/bar/"
         ])
-        self.assertEquals(
-            ['/foo/bar', '/bar/foo'],
-            vars(args).get('test_path')
-        )
-
-    def test_project_import(self):
-        args = main._parse_args([
-            "--project_import=github.com/Workiva/goverge"
-        ])
-
-        self.assertEquals(
-            "github.com/Workiva/goverge",
-            vars(args).get('project_import')
-        )
-
-    def test_race(self):
-        args = main._parse_args(["--race"])
-        self.assertTrue(vars(args).get('race'))
-
-    def test_short(self):
-        args = main._parse_args(['--short'])
-        self.assertTrue(vars(args).get('short'))
-
-    def test_tag(self):
-        args = main._parse_args(["--tag=foo"])
-        self.assertEquals("foo", vars(args).get('tag'))
-
-    def test_threads(self):
-        args = main._parse_args(["--threads=10"])
-        self.assertEquals('10', vars(args).get('threads'))
-
-    def test_xml(self):
-        args = main._parse_args(["--xml"])
-        self.assertTrue(vars(args).get('xml'))
-
-    def test_xml_dir(self):
-        args = main._parse_args(["--xml_dir=/foo/bar/"])
-        self.assertEquals('/foo/bar/', vars(args).get('xml_dir'))
+        expected = {
+            'go_flags': ["-x", "-timeout=5m"],
+            'covermode': 'atomic',
+            'godep': True,
+            'html': True,
+            'ignore': None,
+            'project_import': "github.com/Workiva/goverge",
+            'race': True,
+            'short': True,
+            'tag': "foo",
+            'threads': "12",
+            'test_path': ['/foo/bar', '/bar/foo'],
+            'xml': True,
+            'xml_dir': '/foo/bar/',
+        }
+        self.assertEqual(expected, vars(args))

@@ -15,6 +15,7 @@ limitations under the License.
 """
 
 import glob
+import io
 import logging
 import time
 
@@ -84,7 +85,7 @@ def compile_reports(reports):
 def write_coverage_to_file(coverage_reports: list):
     """Write the coverage report lines to the coverage file."""
 
-    with open("test_coverage.txt", "w") as coverage_file:
+    with io.open("test_coverage.txt", "w", encoding='UTF-8') as coverage_file:
         coverage_file.write("mode: set\n")
         coverage_file.write("".join(coverage_reports))
     print("Coverage file created: test_coverage.txt")

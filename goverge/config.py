@@ -25,21 +25,21 @@ from goverge.packages import get_sub_packages
 class CoverageConfig:
     def __init__(
             self,
-            cover_mode: str,
-            go_flags: list,
-            godep: bool,
-            html: bool,
-            ignore_list: list,
-            project_import: str,
-            project_package: str,
-            project_root: str,
-            race: bool,
-            short: bool,
-            sub_packages: list,
-            tag: str,
-            test_path: Any,
-            xml: bool,
-            xml_dir: str,
+            cover_mode: str = None,
+            go_flags: list = None,
+            godep: bool = None,
+            html: bool = None,
+            ignore_list: list = None,
+            project_import: str = None,
+            project_package: str = None,
+            project_root: str = None,
+            race: bool = None,
+            short: bool = None,
+            sub_packages: list = None,
+            tag: str = None,
+            threads: int = 4,
+            xml: bool = None,
+            xml_dir: str = None,
     ):
         """
         :param cover_mode: The coverage mode to use can be set, count or
@@ -73,7 +73,7 @@ class CoverageConfig:
         self.short = short
         self.sub_packages = sub_packages
         self.tag = tag
-        self.test_path = test_path
+        self.threads = int(threads)
         self.xml = xml
         self.xml_dir = xml_dir
 
@@ -94,7 +94,7 @@ def create_config(args: argparse.Namespace) -> CoverageConfig:
         short=args.short,
         sub_packages=get_sub_packages(args.test_path, project_root, args.ignore),
         tag=args.tag,
-        test_path=args.test_path,
+        threads=args.threads,
         xml=args.xml,
         xml_dir=args.xml_dir
     )

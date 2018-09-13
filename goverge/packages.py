@@ -17,16 +17,13 @@ limitations under the License.
 import os
 from subprocess import PIPE
 from subprocess import Popen
+import typing
 
 
-def get_sub_packages(test_path: str, project_root: str, ignore_list: list):
+def get_sub_packages(test_path: typing.Any, project_root: str, ignore_list: list):
+    """Get all of the sub packages that coverage will be run on."""
     if test_path:
         return test_path
-    return get_test_packages(project_root, ignore_list)
-
-
-def get_test_packages(project_root: str, ignore_list: list):
-    """Get all of the test packages that coverage will be run on."""
     ignores = ["/.", "Godeps", "vendor"]
     if ignore_list is not None:
         ignores.extend(ignore_list)
@@ -52,4 +49,5 @@ def get_project_package(project_root: str, project_import: str) -> str:
             stdout=PIPE,
             cwd=project_root
         ).communicate()
-    return project_import.replace("'", "")
+    print(project_import)
+    return str(project_import).replace("'", "")

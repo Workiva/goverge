@@ -54,7 +54,7 @@ class TestCompileReports(unittest.TestCase):
         shutil.rmtree("reports")
 
     def test_compile_reports(self):
-        reports = ["reports/coverage_foo.txt", "reports/coverage_bar.txt"]
+        reports = [b"reports/coverage_foo.txt", b"reports/coverage_bar.txt"]
 
         compile_reports(reports)
         lines = [
@@ -72,8 +72,8 @@ class TestCompileReports(unittest.TestCase):
 class TestWriteCoverage(unittest.TestCase):
 
     def test_write_coverage_to_file(self):
-        with mock.patch('goverge.reports.open', create=True) as mock_open:
-            stream = io.BytesIO()
+        with mock.patch('goverge.reports.io.open', create=True) as mock_open:
+            stream = io.StringIO()
             # patching to make getvalue() work after close() or __exit__()
             stream.close = mock.Mock(return_value=None)
             mock_open.return_value = stream
@@ -82,7 +82,7 @@ class TestWriteCoverage(unittest.TestCase):
 
             write_coverage_to_file(coverage_reports)
 
-            mock_open.assert_called_once_with('test_coverage.txt', 'w')
+            mock_open.assert_called_once_with('test_coverage.txt', 'w', encoding='UTF-8')
 
             contents = stream.getvalue()
             self.assertEquals(contents, 'mode: set\nfoo\nbar\nbaz\n')
