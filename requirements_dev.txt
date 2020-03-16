@@ -1,7 +1,7 @@
 codecov==1.4.1
 coverage==3.7.1
 
-mccabe==0.3.1 # flake8
+mccabe==0.6.1 # flake8
 pep8==1.5.7 # flake8
 pyflakes==0.8.1 # flake8
 flake8==2.4.1
