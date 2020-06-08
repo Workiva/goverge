@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from __future__ import print_function
 
 import glob
 import logging
@@ -74,10 +75,10 @@ def compile_reports(reports):
                 else:
                     package_reports[line_parts[0]] = line
 
-            print "{0} was processed in: {1} seconds".format(
-                report, time.clock() - report_start_time)
-    print "Time to process all reports: {0}".format(
-        time.clock() - time_at_beginning)
+            print("{0} was processed in: {1} seconds".format(
+                report, time.clock() - report_start_time))
+    print("Time to process all reports: {0}".format(
+        time.clock() - time_at_beginning))
     write_coverage_to_file(package_reports.values())
 
 
@@ -92,4 +93,4 @@ def write_coverage_to_file(coverage_reports):
     with open("test_coverage.txt", "w") as coverage_file:
         coverage_file.write("mode: set\n")
         coverage_file.write("".join(coverage_reports))
-    print "Coverage file created: test_coverage.txt"
+    print("Coverage file created: test_coverage.txt")

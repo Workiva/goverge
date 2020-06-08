@@ -22,10 +22,10 @@ from subprocess import PIPE
 from subprocess import Popen
 import sys
 
-from _pkg_meta import version
-from coverage import generate_coverage
-from reports import compile_reports
-from reports import get_coverage_reports
+from ._pkg_meta import version
+from .coverage import generate_coverage
+from .reports import compile_reports
+from .reports import get_coverage_reports
 
 
 def delete_folder(folder):
