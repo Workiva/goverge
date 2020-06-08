@@ -29,6 +29,8 @@ from .reports import get_coverage_reports
 
 
 """Entry points for goverge."""
+
+
 def delete_folder(folder):
     """Delete a folder using the given path, ignoring OSErrors"""
     try:
