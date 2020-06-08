@@ -13,8 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-"""Entry points for goverge."""
 from __future__ import absolute_import
 
 import argparse
@@ -30,6 +28,7 @@ from .reports import compile_reports
 from .reports import get_coverage_reports
 
 
+"""Entry points for goverge."""
 def delete_folder(folder):
     """Delete a folder using the given path, ignoring OSErrors"""
     try:
