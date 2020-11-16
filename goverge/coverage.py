@@ -179,7 +179,7 @@ def generate_xml(output_loc, options, test_path):
             out_file.write(line)
         p.communicate()
     subprocess.call([
-        "go2xunit", "-input", output_file, "-output",
+        "go-junit-report", "-input", output_file, "-output",
         output_loc + ".xml"])
     os.remove(output_file)
     check_failed(p.returncode)

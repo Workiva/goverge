@@ -234,7 +234,7 @@ def _parse_args(argv):
         action='store_true',
         default=False,
         help=(
-            "Generate xml reports of test runs, assumes that go2xunit is "
+            "Generate xml reports of test runs, assumes that go-junit-report is "
             "installed"
         )
     )
