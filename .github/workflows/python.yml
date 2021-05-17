@@ -1,0 +1,28 @@
+name: Build, test, publish python package
+
+on:
+  pull_request:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '2.x'
+    - name: Build and test
+      run: |
+        pip install -r requirements_dev.txt
+        flake8
+        nosetests
+        pip install setuptools wheel twine
+        python setup.py sdist bdist_wheel
+    - name: Publish on release
+      if: startsWith(github.ref, 'refs/tags')
+      env:
+        TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+        TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+      run: twine upload dist/*
